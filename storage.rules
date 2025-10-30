@@ -1,0 +1,39 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper function to check authentication
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth.token.role == 'admin';
+    }
+    
+    // Receipt PDFs - Only admins can write, authenticated users can read
+    match /receipts/{year}/{month}/{receiptNo}.pdf {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    
+    // Profile pictures - Users can write their own, anyone can read
+    match /profiles/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Organization assets - Only admins can write, public read
+    match /assets/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Notice attachments - Only admins can write, public read
+    match /notices/{noticeId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
