@@ -1,0 +1,131 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============================================
+    // HELPER FUNCTIONS
+    // ============================================
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if user is admin
+    function isAdmin() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Check if user is the owner
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Check if user is active
+    function isActiveUser() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isActive == true;
+    }
+    
+    // ============================================
+    // USERS COLLECTION
+    // ============================================
+    match /users/{userId} {
+      // Users can read their own data, admins can read all
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      
+      // Users can create their own account during registration
+      allow create: if isAuthenticated();
+      
+      // Users can update their own data, admins can update all
+      allow update: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      
+      // Only admins can delete users
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // MEMBERS COLLECTION (Census Data)
+    // ============================================
+    match /members/{memberId} {
+      // All authenticated users can read members
+      allow read: if isAuthenticated();
+      
+      // Any authenticated user can create member records
+      allow create: if isAuthenticated();
+      
+      // Users can update their own family members, admins can update all
+      allow update: if isAuthenticated() && 
+                       (resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Only admins can delete member records
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // BILLS COLLECTION
+    // ============================================
+    match /bills/{billId} {
+      // All authenticated users can read bills
+      allow read: if isAuthenticated();
+      
+      // Only admins can create bills
+      allow create: if isAdmin() && 
+                       request.resource.data.amount is number && 
+                       request.resource.data.amount > 0;
+      
+      // Only admins can update bills
+      allow update: if isAdmin();
+      
+      // Only admins can delete bills
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // ACCOUNTS SUBCOLLECTIONS
+    // ============================================
+    match /accounts/{category}/records/{recordId} {
+      // All authenticated users can read
+      allow read: if isAuthenticated();
+      
+      // Only admins can write
+      allow write: if isAdmin();
+    }
+    
+    // ============================================
+    // NOTICES COLLECTION
+    // ============================================
+    match /notices/{noticeId} {
+      // Public read access (for homepage)
+      allow read: if true;
+      
+      // Only admins can create/update/delete notices
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================
+    // COUNTERS COLLECTION
+    // ============================================
+    match /counters/{counterId} {
+      // Authenticated users can read counters
+      allow read: if isAuthenticated();
+      
+      // Only Cloud Functions can write (via admin SDK)
+      allow write: if false;
+    }
+    
+    // ============================================
+    // SETTINGS COLLECTION
+    // ============================================
+    match /settings/{settingId} {
+      // Authenticated users can read settings
+      allow read: if isAuthenticated();
+      
+      // Only admins can update settings
+      allow write: if isAdmin();
+    }
+  }
+}
