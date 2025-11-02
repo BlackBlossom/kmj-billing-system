@@ -74,7 +74,13 @@ export const config = {
 
   // CORS
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: process.env.CLIENT_URL 
+      ? process.env.CLIENT_URL.split(',').map(url => url.trim())
+      : [
+          'http://localhost:5173',
+          'http://localhost:3000',
+          'https://kmj-billing-system.vercel.app'
+        ],
     credentials: true,
   },
 
