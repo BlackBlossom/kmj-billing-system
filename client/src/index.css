@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+/* Custom Animations */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(200%) skewX(-12deg);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 3s infinite;
+}
+
+.animate-glow {
+  animation: glow 3s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom Scrollbar - Light Theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #a3a3a3;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #737373;
+}
+
+/* Input Focus Glow Effect */
+input:focus,
+textarea:focus,
+select:focus {
+  box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.1);
+}
+
+/* Custom Button Animations */
+button {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Aceternity Grid Background */
+.grid-background {
+  background-image: 
+    linear-gradient(to right, rgba(4, 120, 87, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(4, 120, 87, 0.1) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+}
+
+@font-face {
+  font-family: 'Caldina Regular';
+  src: url('./assests/CaldinaRegular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-caldina {
+  font-family: 'Caldina Regular', sans-serif;
+}
