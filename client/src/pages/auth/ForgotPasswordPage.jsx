@@ -1,5 +1,5 @@
 /**
- * Forgot Password Page - Light Theme
+ * Forgot Password Page - New Color Palette Design
  * Password verification using Member ID and Aadhaar
  */
 
@@ -90,45 +90,46 @@ const ForgotPasswordPage = () => {
     return (
       <AuthLayout>
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
+          initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="space-y-6"
+          transition={{ duration: 0.4 }}
+          className="space-y-6 bg-white rounded-3xl p-10 shadow-[0_20px_60px_rgba(0,0,0,0.3)] border-2 border-[#E3F9F9]/50"
         >
           {/* Success Icon */}
           <div className="flex justify-center">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring" }}
-              className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-100"
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-linear-to-br from-[#E3F9F9] to-[#41A4A7]/20 shadow-lg"
             >
-              <CheckCircleIcon className="h-12 w-12 text-emerald-600" />
+              <CheckCircleIcon className="h-14 w-14 text-[#31757A] drop-shadow-md" />
             </motion.div>
           </div>
 
           {/* Success Message */}
-          <div className="text-center space-y-2">
-            <h3 className="text-2xl font-bold text-neutral-900">
+          <div className="text-center space-y-3">
+            <h3 className="text-3xl font-bold bg-linear-to-r from-[#1F2E2E] to-[#31757A] bg-clip-text text-transparent">
               Verification Complete!
             </h3>
-            <p className="text-neutral-600">
+            <p className="text-gray-500 font-medium">
               Your credentials have been verified successfully
             </p>
           </div>
 
           {/* Member Info */}
-          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-            <p className="text-sm text-neutral-700 text-center">
-              Member ID: <span className="font-bold text-emerald-700">{formData.memberId}</span>
+          <div className="bg-linear-to-br from-[#E3F9F9] to-white border-2 border-[#41A4A7]/30 rounded-2xl p-5 shadow-lg">
+            <p className="text-base text-[#1F2E2E] text-center font-medium">
+              Member ID: <span className="font-bold text-[#31757A] text-lg">{formData.memberId}</span>
             </p>
           </div>
 
           {/* Information Box */}
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
+          <div className="bg-linear-to-br from-blue-50 to-white border-2 border-blue-200 rounded-2xl p-5 space-y-3 shadow-md">
             <div className="flex items-start gap-3">
-              <InformationCircleIcon className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
-              <div className="space-y-2 text-sm text-neutral-700">
-                <p className="font-medium text-neutral-900">Your Password:</p>
+              <InformationCircleIcon className="h-6 w-6 text-blue-600 shrink-0 mt-0.5" />
+              <div className="space-y-2 text-sm text-gray-700">
+                <p className="font-bold text-[#1F2E2E]">Your Password:</p>
                 <ul className="space-y-1.5 ml-4 list-disc">
                   <li>Your 12-digit Aadhaar number is your password</li>
                   <li>Use it to login to your account</li>
@@ -141,20 +142,27 @@ const ForgotPasswordPage = () => {
           {/* Back to Login Button */}
           <Link to="/login">
             <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              className="w-full py-3 rounded-lg font-medium text-white bg-linear-to-r from-emerald-600 to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2"
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              className="relative w-full py-4 rounded-xl font-bold text-white overflow-hidden group shadow-xl hover:shadow-2xl transition-all duration-200 flex items-center justify-center gap-2"
             >
-              <ArrowLeftIcon className="h-5 w-5" />
-              Back to Login
+              <div className="absolute inset-0 bg-linear-to-r from-[#31757A] via-[#41A4A7] to-[#31757A] transition-all duration-300"></div>
+              <div className="absolute inset-0 bg-linear-to-r from-[#41A4A7] via-[#31757A] to-[#41A4A7] opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.3),transparent_50%)] opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+              
+              <span className="relative z-10 flex items-center gap-2">
+                <ArrowLeftIcon className="h-5 w-5" />
+                Back to Login
+              </span>
             </motion.button>
           </Link>
 
           {/* Support Contact */}
-          <p className="text-xs text-center text-neutral-500">
+          <p className="text-xs text-center text-gray-500">
             Need help? Contact{' '}
-            <a href="tel:+919876543210" className="text-emerald-600 hover:text-emerald-700 font-medium">
-              +91 9876543210
+            <a href="tel:+917034829292" className="text-[#31757A] hover:text-[#41A4A7] font-semibold">
+              +91 703 48 29292
             </a>
           </p>
         </motion.div>
@@ -164,24 +172,30 @@ const ForgotPasswordPage = () => {
 
   return (
     <AuthLayout>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <motion.form 
+        onSubmit={handleSubmit} 
+        className="space-y-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+      >
         {/* Header */}
-        <div className="text-center space-y-1 mb-2">
-          <h2 className="text-xl font-bold text-neutral-900">
+        <div className="text-center space-y-2 mb-4">
+          <h2 className="text-2xl font-bold bg-linear-to-r from-[#1F2E2E] to-[#31757A] bg-clip-text text-transparent">
             Forgot Password?
           </h2>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-gray-500 font-medium">
             Verify your identity with Member ID and Aadhaar
           </p>
         </div>
 
         {/* Member ID Input */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-neutral-700">
+          <label className="block text-sm font-bold text-[#1F2E2E] tracking-wide">
             Member ID
           </label>
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400">
+          <div className="relative group">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#31757A] transition-colors">
               <IdentificationIcon className="h-5 w-5" />
             </div>
             <input
@@ -191,7 +205,7 @@ const ForgotPasswordPage = () => {
               onChange={handleChange}
               placeholder="1/74"
               autoFocus
-              className="w-full pl-10 pr-4 py-3 bg-white border border-neutral-300 rounded-lg text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 shadow-sm"
+              className="w-full pl-11 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-[#1F2E2E] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#31757A] focus:border-[#31757A] focus:shadow-lg focus:shadow-[#31757A]/20 transition-all duration-200 shadow-sm group-hover:border-gray-300"
             />
           </div>
           {errors.memberId && (
@@ -203,16 +217,16 @@ const ForgotPasswordPage = () => {
               {errors.memberId}
             </motion.p>
           )}
-          <p className="text-xs text-neutral-500">Format: ward/house (e.g., 1/74)</p>
+          <p className="text-xs text-gray-500">Format: ward/house (e.g., 1/74)</p>
         </div>
 
         {/* Aadhaar Input */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-neutral-700">
+          <label className="block text-sm font-bold text-[#1F2E2E] tracking-wide">
             Aadhaar Number
           </label>
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400">
+          <div className="relative group">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#31757A] transition-colors">
               <LockClosedIcon className="h-5 w-5" />
             </div>
             <input
@@ -222,7 +236,7 @@ const ForgotPasswordPage = () => {
               onChange={handleChange}
               placeholder="123456789012"
               maxLength={12}
-              className="w-full pl-10 pr-4 py-3 bg-white border border-neutral-300 rounded-lg text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 shadow-sm"
+              className="w-full pl-11 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-[#1F2E2E] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#31757A] focus:border-[#31757A] focus:shadow-lg focus:shadow-[#31757A]/20 transition-all duration-200 shadow-sm group-hover:border-gray-300"
             />
           </div>
           {errors.aadhaar && (
@@ -234,7 +248,7 @@ const ForgotPasswordPage = () => {
               {errors.aadhaar}
             </motion.p>
           )}
-          <p className="text-xs text-neutral-500">Your 12-digit Aadhaar number</p>
+          <p className="text-xs text-gray-500">Your 12-digit Aadhaar number</p>
         </div>
 
         {/* General Error */}
@@ -252,8 +266,8 @@ const ForgotPasswordPage = () => {
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
           <div className="flex gap-3">
             <InformationCircleIcon className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-            <div className="space-y-1 text-xs text-neutral-700">
-              <p className="font-medium">Important:</p>
+            <div className="space-y-1 text-xs text-gray-700">
+              <p className="font-semibold text-[#1F2E2E]">Important:</p>
               <ul className="space-y-0.5 list-disc list-inside">
                 <li>Your Aadhaar number is your password</li>
                 <li>This verification confirms your identity</li>
@@ -267,12 +281,14 @@ const ForgotPasswordPage = () => {
         <motion.button
           type="submit"
           disabled={isLoading}
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.99 }}
-          className="relative w-full py-3 rounded-lg font-medium text-white overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+          whileHover={{ scale: 1.02, y: -2 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.2 }}
+          className="relative w-full py-4 rounded-xl font-bold text-white overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed shadow-xl hover:shadow-2xl transition-all duration-200"
         >
-          <div className="absolute inset-0 bg-linear-to-r from-emerald-600 to-emerald-700 transition-all duration-300"></div>
-          <div className="absolute inset-0 bg-linear-to-r from-emerald-700 to-emerald-600 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-[#31757A] via-[#41A4A7] to-[#31757A] transition-all duration-300"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-[#41A4A7] via-[#31757A] to-[#41A4A7] opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.3),transparent_50%)] opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
           
           <span className="relative z-10 flex items-center justify-center gap-2">
             {isLoading ? (
@@ -293,7 +309,7 @@ const ForgotPasswordPage = () => {
         <div className="text-center">
           <Link
             to="/login"
-            className="inline-flex items-center gap-2 text-neutral-600 hover:text-neutral-900 text-sm font-medium transition-colors"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-[#31757A] text-sm font-bold tracking-wide transition-colors duration-200"
           >
             <ArrowLeftIcon className="h-4 w-4" />
             Back to Login
@@ -301,13 +317,13 @@ const ForgotPasswordPage = () => {
         </div>
 
         {/* Support Contact */}
-        <p className="text-xs text-center text-neutral-500">
+        <p className="text-xs text-center text-gray-500">
           Need assistance? Contact{' '}
-          <a href="tel:+919876543210" className="text-emerald-600 hover:text-emerald-700 font-medium">
-            +91 9876543210
+          <a href="tel:+917034829292" className="text-[#31757A] hover:text-[#41A4A7] font-semibold">
+            +91 703 48 29292
           </a>
         </p>
-      </form>
+      </motion.form>
     </AuthLayout>
   );
 };

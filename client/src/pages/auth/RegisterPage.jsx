@@ -1,5 +1,5 @@
 /**
- * Register Page - Light Theme
+ * Register Page - New Color Palette Design
  * New user registration
  */
 
@@ -114,24 +114,30 @@ const RegisterPage = () => {
 
   return (
     <AuthLayout>
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <motion.form 
+        onSubmit={handleSubmit} 
+        className="space-y-5"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+      >
         {/* Header */}
-        <div className="text-center space-y-1 mb-2">
-          <h2 className="text-xl font-bold text-neutral-900">
+        <div className="text-center space-y-2 mb-4">
+          <h2 className="text-2xl font-bold bg-linear-to-r from-[#1F2E2E] to-[#31757A] bg-clip-text text-transparent">
             Create Account
           </h2>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-gray-500 font-medium">
             Join our community today
           </p>
         </div>
 
         {/* Full Name */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-neutral-700">
+          <label className="block text-sm font-bold text-[#1F2E2E] tracking-wide">
             Full Name
           </label>
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400">
+          <div className="relative group">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#31757A] transition-colors">
               <UserIcon className="h-5 w-5" />
             </div>
             <input
@@ -142,7 +148,7 @@ const RegisterPage = () => {
               placeholder="Ahmed Khan"
               autoFocus
               autoComplete="name"
-              className="w-full pl-10 pr-4 py-3 bg-white border border-neutral-300 rounded-lg text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 shadow-sm"
+              className="w-full pl-11 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-[#1F2E2E] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#31757A] focus:border-[#31757A] focus:shadow-lg focus:shadow-[#31757A]/20 transition-all duration-200 shadow-sm group-hover:border-gray-300"
             />
           </div>
           {errors.name && (
@@ -158,11 +164,11 @@ const RegisterPage = () => {
 
         {/* Address */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-neutral-700">
+          <label className="block text-sm font-bold text-[#1F2E2E] tracking-wide">
             Address
           </label>
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400">
+          <div className="relative group">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#31757A] transition-colors">
               <HomeIcon className="h-5 w-5" />
             </div>
             <input
@@ -170,9 +176,9 @@ const RegisterPage = () => {
               name="address"
               value={formData.address}
               onChange={handleChange}
-              placeholder="House No 74, Kalloor Village, Kerala"
+              placeholder="123 Main Street"
               autoComplete="street-address"
-              className="w-full pl-10 pr-4 py-3 bg-white border border-neutral-300 rounded-lg text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 shadow-sm"
+              className="w-full pl-11 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-[#1F2E2E] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#31757A] focus:border-[#31757A] focus:shadow-lg focus:shadow-[#31757A]/20 transition-all duration-200 shadow-sm group-hover:border-gray-300"
             />
           </div>
           {errors.address && (
@@ -184,16 +190,16 @@ const RegisterPage = () => {
               {errors.address}
             </motion.p>
           )}
-          <p className="text-xs text-neutral-500">Complete residential address</p>
+          <p className="text-xs text-gray-500">Complete residential address</p>
         </div>
 
         {/* Aadhaar */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-neutral-700">
+          <label className="block text-sm font-bold text-[#1F2E2E] tracking-wide">
             Aadhaar Number
           </label>
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400">
+          <div className="relative group">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#31757A] transition-colors">
               <LockClosedIcon className="h-5 w-5" />
             </div>
             <input
@@ -203,7 +209,7 @@ const RegisterPage = () => {
               onChange={handleChange}
               placeholder="123456789012"
               maxLength={12}
-              className="w-full pl-10 pr-4 py-3 bg-white border border-neutral-300 rounded-lg text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 shadow-sm"
+              className="w-full pl-11 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-[#1F2E2E] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#31757A] focus:border-[#31757A] focus:shadow-lg focus:shadow-[#31757A]/20 transition-all duration-200 shadow-sm group-hover:border-gray-300"
             />
           </div>
           {errors.aadhaar && (
@@ -215,24 +221,26 @@ const RegisterPage = () => {
               {errors.aadhaar}
             </motion.p>
           )}
-          <p className="text-xs text-neutral-500">12-digit Aadhaar number (will be used as password)</p>
+          <p className="text-xs text-gray-500">12-digit Aadhaar number (will be used as password)</p>
         </div>
 
         {/* Ward and House Number */}
         <div className="grid grid-cols-2 gap-4">
           {/* Ward */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-neutral-700">
+            <label className="block text-sm font-bold text-[#1F2E2E] tracking-wide">
               Ward Number
             </label>
-            <input
-              type="text"
-              name="ward"
-              value={formData.ward}
-              onChange={handleChange}
-              placeholder="1"
-              className="w-full px-4 py-3 bg-white border border-neutral-300 rounded-lg text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 shadow-sm"
-            />
+            <div className="group">
+              <input
+                type="text"
+                name="ward"
+                value={formData.ward}
+                onChange={handleChange}
+                placeholder="1"
+                className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-[#1F2E2E] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#31757A] focus:border-[#31757A] focus:shadow-lg focus:shadow-[#31757A]/20 transition-all duration-200 shadow-sm group-hover:border-gray-300"
+              />
+            </div>
             {errors.ward && (
               <motion.p
                 initial={{ opacity: 0, y: -10 }}
@@ -246,17 +254,19 @@ const RegisterPage = () => {
 
           {/* House Number */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-neutral-700">
+            <label className="block text-sm font-bold text-[#1F2E2E] tracking-wide">
               House Number
             </label>
-            <input
-              type="text"
-              name="houseNo"
-              value={formData.houseNo}
-              onChange={handleChange}
-              placeholder="74"
-              className="w-full px-4 py-3 bg-white border border-neutral-300 rounded-lg text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 shadow-sm"
-            />
+            <div className="group">
+              <input
+                type="text"
+                name="houseNo"
+                value={formData.houseNo}
+                onChange={handleChange}
+                placeholder="42"
+                className="w-full px-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-[#1F2E2E] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#31757A] focus:border-[#31757A] focus:shadow-lg focus:shadow-[#31757A]/20 transition-all duration-200 shadow-sm group-hover:border-gray-300"
+              />
+            </div>
             {errors.houseNo && (
               <motion.p
                 initial={{ opacity: 0, y: -10 }}
@@ -271,11 +281,11 @@ const RegisterPage = () => {
 
         {/* Phone */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-neutral-700">
+          <label className="block text-sm font-bold text-[#1F2E2E] tracking-wide">
             Phone Number
           </label>
-          <div className="relative">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400">
+          <div className="relative group">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#31757A] transition-colors">
               <PhoneIcon className="h-5 w-5" />
             </div>
             <input
@@ -285,7 +295,7 @@ const RegisterPage = () => {
               onChange={handleChange}
               placeholder="9876543210"
               autoComplete="tel"
-              className="w-full pl-10 pr-4 py-3 bg-white border border-neutral-300 rounded-lg text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 shadow-sm"
+              className="w-full pl-11 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-[#1F2E2E] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#31757A] focus:border-[#31757A] focus:shadow-lg focus:shadow-[#31757A]/20 transition-all duration-200 shadow-sm group-hover:border-gray-300"
             />
           </div>
           {errors.phone && (
@@ -297,7 +307,7 @@ const RegisterPage = () => {
               {errors.phone}
             </motion.p>
           )}
-          <p className="text-xs text-neutral-500">10-digit Indian mobile number</p>
+          <p className="text-xs text-gray-500">10-digit Indian mobile number</p>
         </div>
 
         {/* Terms & Conditions */}
@@ -308,20 +318,20 @@ const RegisterPage = () => {
               name="agreeToTerms"
               checked={formData.agreeToTerms}
               onChange={handleChange}
-              className="w-4 h-4 mt-0.5 text-emerald-600 border-neutral-300 rounded focus:ring-emerald-500 focus:ring-2"
+              className="w-4 h-4 mt-0.5 text-[#31757A] border-gray-200 rounded focus:ring-[#31757A] focus:ring-2"
             />
-            <span className="text-sm text-neutral-700 group-hover:text-neutral-900 transition-colors">
+            <span className="text-sm text-[#1F2E2E] group-hover:text-[#31757A] transition-colors">
               I agree to the{' '}
               <Link
                 to="/terms"
-                className="text-emerald-600 hover:text-emerald-700 font-medium"
+                className="text-[#31757A] hover:text-[#41A4A7] font-semibold"
               >
                 Terms and Conditions
               </Link>{' '}
               and{' '}
               <Link
                 to="/privacy"
-                className="text-emerald-600 hover:text-emerald-700 font-medium"
+                className="text-[#31757A] hover:text-[#41A4A7] font-semibold"
               >
                 Privacy Policy
               </Link>
@@ -342,12 +352,14 @@ const RegisterPage = () => {
         <motion.button
           type="submit"
           disabled={isLoading}
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.99 }}
-          className="relative w-full py-3 rounded-lg font-medium text-white overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+          whileHover={{ scale: 1.02, y: -2 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.2 }}
+          className="relative w-full py-4 rounded-xl font-bold text-white overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed shadow-xl hover:shadow-2xl transition-all duration-200"
         >
-          <div className="absolute inset-0 bg-linear-to-r from-emerald-600 to-emerald-700 transition-all duration-300"></div>
-          <div className="absolute inset-0 bg-linear-to-r from-emerald-700 to-emerald-600 opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-[#31757A] via-[#41A4A7] to-[#31757A] transition-all duration-300"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-[#41A4A7] via-[#31757A] to-[#41A4A7] opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.3),transparent_50%)] opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
           
           <span className="relative z-10 flex items-center justify-center gap-2">
             {isLoading ? (
@@ -367,28 +379,30 @@ const RegisterPage = () => {
         {/* Divider */}
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-neutral-300" />
+            <div className="w-full border-t border-gray-200" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-white text-neutral-500">
+            <span className="px-4 bg-transparent text-gray-500 font-medium">
               Already have an account?
             </span>
           </div>
         </div>
 
         {/* Login Link */}
-        <Link to="/login">
-          <motion.button
-            type="button"
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-            className="w-full py-3 rounded-lg font-medium text-neutral-700 border-2 border-neutral-300 hover:border-emerald-500 hover:text-emerald-600 transition-all duration-200 shadow-sm flex items-center justify-center gap-2"
+        <motion.div
+          whileHover={{ scale: 1.02, y: -2 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Link 
+            to="/login" 
+            className="flex items-center justify-center gap-2 w-full py-4 rounded-xl font-bold text-[#31757A] border-2 border-[#31757A] hover:bg-[#E3F9F9] hover:border-[#41A4A7] transition-all duration-200 shadow-sm hover:shadow-lg"
           >
             <ArrowLeftIcon className="h-4 w-4" />
             Sign In Instead
-          </motion.button>
-        </Link>
-      </form>
+          </Link>
+        </motion.div>
+      </motion.form>
     </AuthLayout>
   );
 };
