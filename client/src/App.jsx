@@ -9,10 +9,20 @@ import { ToastContainer } from './components/common/Toast';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import useAuthStore from './store/authStore';
 
+// Layouts
+import PublicLayout from './components/layout/PublicLayout';
+
 // Auth Pages
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+
+// Public Pages
+import HomePage from './pages/public/HomePage';
+import AboutPage from './pages/public/AboutPage';
+import EventsPage from './pages/public/EventsPage';
+import ServicesPage from './pages/public/ServicesPage';
+import ContactPage from './pages/public/ContactPage';
 
 // Dashboard Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -47,7 +57,16 @@ function App() {
       <ToastContainer />
       
       <Routes>
-        {/* Public Routes */}
+        {/* Public Pages with Layout */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+        </Route>
+
+        {/* Auth Routes */}
         <Route
           path="/login"
           element={
@@ -87,18 +106,6 @@ function App() {
             <ProtectedRoute>
               <UserDashboard />
             </ProtectedRoute>
-          }
-        />
-
-        {/* Root Redirect */}
-        <Route
-          path="/"
-          element={
-            isAuthenticated ? (
-              <Navigate to={isAdmin() ? '/admin/dashboard' : '/dashboard'} replace />
-            ) : (
-              <Navigate to="/login" replace />
-            )
           }
         />
 
