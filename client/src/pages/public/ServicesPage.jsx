@@ -15,6 +15,7 @@ import {
   AcademicCapIcon,
 } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
+import banner1 from '../../assets/Images/banner-1.jpg';
 
 const ServicesPage = () => {
   // Main Services
@@ -234,7 +235,7 @@ const ServicesPage = () => {
               transition={{ duration: 0.4, ease: "easeOut", delay: 0.7 }}
             >
               <img
-                src="/src/assets/Images/banner-1.jpg"
+                src={banner1}
                 alt="Community Services"
                 className="rounded-2xl shadow-xl w-full h-auto"
               />

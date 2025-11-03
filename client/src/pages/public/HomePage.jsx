@@ -19,14 +19,19 @@ import {
   EnvelopeIcon,
 } from '@heroicons/react/24/outline';
 
+// Import images
+import banner1 from '../../assets/Images/banner-1.jpg';
+import banner2 from '../../assets/Images/banner-2.jpg';
+import banner4 from '../../assets/Images/banner-4.jpg';
+
 const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   // Carousel images
   const slides = [
-    { id: 1, image: '/src/assets/Images/banner-1.jpg', alt: 'Masjid View 1' },
-    { id: 2, image: '/src/assets/Images/banner-2.jpg', alt: 'Masjid View 2' },
-    { id: 3, image: '/src/assets/Images/banner-4.jpg', alt: 'Masjid View 3' },
+    { id: 1, image: banner1, alt: 'Masjid View 1' },
+    { id: 2, image: banner2, alt: 'Masjid View 2' },
+    { id: 3, image: banner4, alt: 'Masjid View 3' },
   ];
 
   // Auto-advance carousel
@@ -313,7 +318,7 @@ const HomePage = () => {
               className="relative h-64 sm:h-80 lg:h-full mt-8 lg:mt-0"
             >
               <img
-                src="/src/assets/Images/banner-2.jpg"
+                src={banner2}
                 alt="Masjid"
                 className="rounded-2xl w-full h-full object-cover shadow-xl"
               />

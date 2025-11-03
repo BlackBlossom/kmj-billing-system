@@ -4,6 +4,9 @@
 
 import { motion } from 'framer-motion';
 import { CalendarIcon, MapPinIcon, ClockIcon, UsersIcon } from '@heroicons/react/24/outline';
+import banner1 from '../../assets/Images/banner-1.jpg';
+import banner2 from '../../assets/Images/banner-2.jpg';
+import banner4 from '../../assets/Images/banner-4.jpg';
 
 const EventsPage = () => {
   // Upcoming Events
@@ -60,9 +63,9 @@ const EventsPage = () => {
 
   // Past Events Gallery
   const galleryImages = [
-    { id: 1, image: '/src/assets/Images/banner-1.jpg', title: 'Community Gathering' },
-    { id: 2, image: '/src/assets/Images/banner-2.jpg', title: 'Masjid View' },
-    { id: 3, image: '/src/assets/Images/banner-4.jpg', title: 'Prayer Time' },
+    { id: 1, image: banner1, title: 'Community Gathering' },
+    { id: 2, image: banner2, title: 'Masjid View' },
+    { id: 3, image: banner4, title: 'Prayer Time' },
   ];
 
   return (

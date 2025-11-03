@@ -4,6 +4,7 @@
 
 import { motion } from 'framer-motion';
 import { PhoneIcon, UserGroupIcon, CheckCircleIcon, HeartIcon } from '@heroicons/react/24/outline';
+import banner2 from '../../assets/Images/banner-2.jpg';
 
 const AboutPage = () => {
   // Executive Members Data
@@ -172,7 +173,7 @@ const AboutPage = () => {
               className="mt-8 lg:mt-0 max-w-full"
             >
               <img
-                src="/src/assets/Images/banner-2.jpg"
+                src={banner2}
                 alt="Kalloor Masjid"
                 className="rounded-2xl shadow-xl w-full h-64 sm:h-80 lg:h-full object-cover max-w-full"
               />
