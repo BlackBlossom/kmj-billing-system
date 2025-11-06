@@ -2,7 +2,8 @@
  * Contact Page - Get in Touch
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   MapPinIcon,
@@ -12,6 +13,14 @@ import {
 } from '@heroicons/react/24/outline';
 
 const ContactPage = () => {
+  const location = useLocation();
+
+  // Smooth scroll to top on page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [location]);
+
+  
   const [formData, setFormData] = useState({
     name: '',
     phone: '',

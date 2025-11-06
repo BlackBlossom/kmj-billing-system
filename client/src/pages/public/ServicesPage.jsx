@@ -2,6 +2,8 @@
  * Services Page - KMJ Services & Features
  */
 
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   UserGroupIcon,
@@ -14,10 +16,16 @@ import {
   HomeIcon,
   AcademicCapIcon,
 } from '@heroicons/react/24/outline';
-import { Link } from 'react-router-dom';
 import banner1 from '../../assets/Images/banner-1.jpg';
 
 const ServicesPage = () => {
+  const location = useLocation();
+  
+  // Smooth scroll to top on page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [location]);
+
   // Main Services
   const services = [
     {

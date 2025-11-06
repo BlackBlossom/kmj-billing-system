@@ -3,7 +3,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeftIcon,
@@ -26,6 +26,12 @@ import banner4 from '../../assets/Images/banner-4.jpg';
 
 const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const location = useLocation();
+
+  // Smooth scroll to top on page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [location]);
 
   // Carousel images
   const slides = [
@@ -268,13 +274,13 @@ const HomePage = () => {
                   <h3 className="text-lg sm:text-xl font-bold text-[#1F2E2E] mb-2 sm:mb-3">
                     {feature.title}
                   </h3>
-                  <p className="text-sm sm:text-base text-gray-600 leading-relaxed mb-3 sm:mb-4">
+                  <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                     {feature.description}
                   </p>
-                  <button className="text-sm sm:text-base text-[#31757A] font-semibold hover:text-[#41A4A7] transition-all flex items-center gap-2 group-hover:gap-3 duration-200">
+                  {/* <button className="text-sm sm:text-base text-[#31757A] font-semibold hover:text-[#41A4A7] transition-all flex items-center gap-2 group-hover:gap-3 duration-200">
                     Learn More
                     <ArrowRightIcon className="w-4 h-4" />
-                  </button>
+                  </button> */}
                 </div>
               </motion.div>
             ))}

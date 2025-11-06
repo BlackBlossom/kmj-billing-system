@@ -2,6 +2,8 @@
  * Events Page - Community Events & Gallery
  */
 
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CalendarIcon, MapPinIcon, ClockIcon, UsersIcon } from '@heroicons/react/24/outline';
 import banner1 from '../../assets/Images/banner-1.jpg';
@@ -9,6 +11,13 @@ import banner2 from '../../assets/Images/banner-2.jpg';
 import banner4 from '../../assets/Images/banner-4.jpg';
 
 const EventsPage = () => {
+  const location = useLocation();
+
+  // Smooth scroll to top on page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [location]);
+
   // Upcoming Events
   const upcomingEvents = [
     {
