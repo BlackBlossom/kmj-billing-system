@@ -67,6 +67,7 @@ const PublicLayout = () => {
 
           <div className="pt-8 border-t border-white/10 text-center text-white/50">
             <p className="text-xs sm:text-sm wrap-break-words">&copy; 2025 Kalloor Masjid Jama-ath. All rights reserved.</p>
+            <p className="text-xs sm:text-sm mt-2 text-white/40">Designed by Saksham Jain SDE-I</p>
           </div>
         </div>
       </footer>

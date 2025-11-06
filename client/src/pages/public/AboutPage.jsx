@@ -3,96 +3,166 @@
  */
 
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { PhoneIcon, UserGroupIcon, CheckCircleIcon, HeartIcon } from '@heroicons/react/24/outline';
 import banner2 from '../../assets/Images/banner-2.jpg';
 
 const AboutPage = () => {
+  const location = useLocation();
+
+  // Smooth scroll to top on page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [location]);
+
   // Executive Members Data
   const executiveMembers = [
+    //Placeholder for executive members data
     {
-      name: 'S SHAJEER HAJI',
-      role: 'President',
-      address: 'Valiyaveedu, Thoppil, Thonnakkal P O',
-      phone: '+91-984 70 29580',
+      name: 'NAME 1',
+      role: 'ROLE',
+      address: 'ADDRESS',
+      phone: 'PHONE NUMBER',
     },
     {
-      name: 'MAHEEN BAQAVI',
-      role: 'Secretary',
-      address: 'Shah Nivas, Kochalammoodu, Pothencode P O',
-      phone: '+91-703 48 29292',
+      name: 'NAME 2',
+      role: 'ROLE',
+      address: 'ADDRESS',
+      phone: 'PHONE NUMBER',
     },
     {
-      name: 'SAJEER E',
-      role: 'Treasurer',
-      address: 'Shajeer Manzil, Koithoorkonam P O',
-      phone: '+91-889 11 77845',
+      name: 'NAME 3',
+      role: 'ROLE',
+      address: 'ADDRESS',
+      phone: 'PHONE NUMBER',
     },
     {
-      name: 'HASHID H',
-      role: 'Joint Secretary',
-      address: 'Kalloor',
-      phone: '+91-904 83 38959',
+      name: 'NAME 4',
+      role: 'ROLE',
+      address: 'ADDRESS',
+      phone: 'PHONE NUMBER',
     },
     {
-      name: 'SHAJAHAN A',
-      role: 'Vice President',
-      phone: '+91-854 70 29237',
+      name: 'NAME 5',
+      role: 'ROLE',
+      address: 'ADDRESS',
+      phone: 'PHONE NUMBER',
     },
     {
-      name: 'SALAHUDEEN',
-      role: 'Team Member',
-      phone: '+91-854 70 29237',
+      name: 'NAME 6',
+      role: 'ROLE',
+      address: 'ADDRESS',
+      phone: 'PHONE NUMBER',
     },
     {
-      name: 'NOUSHAD M',
-      role: 'Team Member',
-      phone: '+91-940 03 22984',
+      name: 'NAME 7',
+      role: 'ROLE',
+      address: 'ADDRESS',
+      phone: 'PHONE NUMBER',
     },
     {
-      name: 'ABDUL LATHEEF',
-      role: 'Team Member',
-      phone: '+91-964 51 61612',
+      name: 'NAME 8',
+      role: 'ROLE',
+      address: 'ADDRESS',
+      phone: 'PHONE NUMBER',
     },
     {
-      name: 'ABDUL JALEEL',
-      role: 'Team Member',
-      phone: '+91-860 60 34475',
+      name: 'NAME 9',
+      role: 'ROLE',
+      address: 'ADDRESS',
+      phone: 'PHONE NUMBER',
     },
     {
-      name: 'ABDUL JABBAR',
-      role: 'Team Member',
-      phone: '+91-952 67 10135',
+      name: 'NAME 10',
+      role: 'ROLE',
+      address: 'ADDRESS',
+      phone: 'PHONE NUMBER',
     },
-    {
-      name: 'NASEER',
-      role: 'Team Member',
-      phone: '+91-984 75 13001',
-    },
-    {
-      name: 'ELLYAS',
-      role: 'Team Member',
-      phone: '+91-940 03 22984',
-    },
-    {
-      name: 'ABDUL RAHEEM',
-      role: 'Team Member',
-      phone: '+91-755 98 84825',
-    },
-    {
-      name: 'ABDUL AZEEZ',
-      role: 'Team Member',
-      phone: '+91-944 68 46179',
-    },
-    {
-      name: 'ANSAR',
-      role: 'Team Member',
-      phone: '+91-860 60 34475',
-    },
-    {
-      name: 'ABDUL SHUKKOOR',
-      role: 'Team Member',
-      phone: '+91-984 75 62109',
-    },
+    // {
+    //   name: 'S SHAJEER HAJI',
+    //   role: 'President',
+    //   address: 'Valiyaveedu, Thoppil, Thonnakkal P O',
+    //   phone: '+91-984 70 29580',
+    // },
+    // {
+    //   name: 'MAHEEN BAQAVI',
+    //   role: 'Secretary',
+    //   address: 'Shah Nivas, Kochalammoodu, Pothencode P O',
+    //   phone: '+91-703 48 29292',
+    // },
+    // {
+    //   name: 'SAJEER E',
+    //   role: 'Treasurer',
+    //   address: 'Shajeer Manzil, Koithoorkonam P O',
+    //   phone: '+91-889 11 77845',
+    // },
+    // {
+    //   name: 'HASHID H',
+    //   role: 'Joint Secretary',
+    //   address: 'Kalloor',
+    //   phone: '+91-904 83 38959',
+    // },
+    // {
+    //   name: 'SHAJAHAN A',
+    //   role: 'Vice President',
+    //   phone: '+91-854 70 29237',
+    // },
+    // {
+    //   name: 'SALAHUDEEN',
+    //   role: 'Team Member',
+    //   phone: '+91-854 70 29237',
+    // },
+    // {
+    //   name: 'NOUSHAD M',
+    //   role: 'Team Member',
+    //   phone: '+91-940 03 22984',
+    // },
+    // {
+    //   name: 'ABDUL LATHEEF',
+    //   role: 'Team Member',
+    //   phone: '+91-964 51 61612',
+    // },
+    // {
+    //   name: 'ABDUL JALEEL',
+    //   role: 'Team Member',
+    //   phone: '+91-860 60 34475',
+    // },
+    // {
+    //   name: 'ABDUL JABBAR',
+    //   role: 'Team Member',
+    //   phone: '+91-952 67 10135',
+    // },
+    // {
+    //   name: 'NASEER',
+    //   role: 'Team Member',
+    //   phone: '+91-984 75 13001',
+    // },
+    // {
+    //   name: 'ELLYAS',
+    //   role: 'Team Member',
+    //   phone: '+91-940 03 22984',
+    // },
+    // {
+    //   name: 'ABDUL RAHEEM',
+    //   role: 'Team Member',
+    //   phone: '+91-755 98 84825',
+    // },
+    // {
+    //   name: 'ABDUL AZEEZ',
+    //   role: 'Team Member',
+    //   phone: '+91-944 68 46179',
+    // },
+    // {
+    //   name: 'ANSAR',
+    //   role: 'Team Member',
+    //   phone: '+91-860 60 34475',
+    // },
+    // {
+    //   name: 'ABDUL SHUKKOOR',
+    //   role: 'Team Member',
+    //   phone: '+91-984 75 62109',
+    // },
   ];
 
   const values = [
