@@ -46,8 +46,8 @@ const ForgotPasswordPage = () => {
     
     if (!formData.memberId.trim()) {
       newErrors.memberId = 'Member ID is required';
-    } else if (!/^\d+\/\d+$/.test(formData.memberId)) {
-      newErrors.memberId = 'Member ID format should be ward/house (e.g., 1/74)';
+    } else if (!/^(\d+\/\d+|ADMIN\/\d+)$/i.test(formData.memberId)) {
+      newErrors.memberId = 'Member ID format should be ward/house (e.g., 1/74) or ADMIN/001';
     }
 
     if (!formData.aadhaar.trim()) {
@@ -203,21 +203,25 @@ const ForgotPasswordPage = () => {
               name="memberId"
               value={formData.memberId}
               onChange={handleChange}
-              placeholder="1/74"
+              placeholder="1/74 or ADMIN/001"
               autoFocus
-              className="w-full pl-11 pr-4 py-3.5 bg-white border-2 border-gray-200 rounded-xl text-[#1F2E2E] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#31757A] focus:border-[#31757A] focus:shadow-lg focus:shadow-[#31757A]/20 transition-all duration-200 shadow-sm group-hover:border-gray-300"
+              className={`w-full pl-11 pr-4 py-3.5 bg-white border-2 rounded-xl text-[#1F2E2E] placeholder-gray-400 focus:outline-none focus:ring-2 transition-all duration-200 shadow-sm ${
+                errors.memberId
+                  ? 'border-red-500 focus:ring-red-500 focus:border-red-500'
+                  : 'border-gray-200 focus:ring-[#31757A] focus:border-[#31757A] focus:shadow-lg focus:shadow-[#31757A]/20 group-hover:border-gray-300'
+              }`}
             />
           </div>
           {errors.memberId && (
             <motion.p
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-xs text-red-600"
+              className="text-xs text-red-600 font-medium"
             >
               {errors.memberId}
             </motion.p>
           )}
-          <p className="text-xs text-gray-500">Format: ward/house (e.g., 1/74)</p>
+          <p className="text-xs text-gray-500">Format: ward/house (e.g., 1/74) or ADMIN/001</p>
         </div>
 
         {/* Aadhaar Input */}
