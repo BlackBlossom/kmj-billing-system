@@ -106,7 +106,7 @@ const HomePage = () => {
 
               {/* Heading */}
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight">
-                Kalloor Masjid
+                Kalloor Muslim
                 <span className="block text-[#E3F9F9] mt-2">Jama-ath</span>
               </h1>
 
