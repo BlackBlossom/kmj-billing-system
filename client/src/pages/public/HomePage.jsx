@@ -20,6 +20,8 @@ import {
   ExclamationTriangleIcon,
   EyeIcon,
   CalendarIcon,
+  XMarkIcon,
+  PaperClipIcon,
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { getAllNotices } from '../../services/noticeService';
@@ -33,6 +35,8 @@ const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [notices, setNotices] = useState([]);
   const [loadingNotices, setLoadingNotices] = useState(true);
+  const [selectedNotice, setSelectedNotice] = useState(null);
+  const [showNoticeModal, setShowNoticeModal] = useState(false);
   const location = useLocation();
 
   // Smooth scroll to top on page change
@@ -313,7 +317,7 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* Notices Section */}
+      {/* Notices Section - Simple & Minimalist */}
       <section id="notices" className="py-12 sm:py-16 lg:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
@@ -322,136 +326,69 @@ const HomePage = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="text-center mb-12 sm:mb-16"
+            className="text-center mb-10 sm:mb-12"
           >
-            <div className="inline-flex items-center gap-3 mb-4">
-              <BellIcon className="w-8 h-8 text-[#31757A]" />
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1F2E2E]">
-                Latest Announcements
-              </h2>
-            </div>
-            <div className="w-16 sm:w-20 h-1 bg-linear-to-r from-[#31757A] to-[#41A4A7] mx-auto rounded-full mb-3 sm:mb-4" />
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
-              Stay updated with community news and important announcements
-            </p>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1F2E2E] mb-3">
+              Latest Announcements
+            </h2>
+            <div className="w-20 h-1 bg-[#31757A] mx-auto rounded-full" />
           </motion.div>
 
-          {/* Notices Grid */}
+          {/* Notices List */}
           {loadingNotices ? (
             <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#31757A]"></div>
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#31757A]"></div>
             </div>
           ) : notices.length === 0 ? (
-            <div className="text-center py-12">
-              <BellIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">No announcements available at the moment</p>
+            <div className="text-center py-12 text-gray-500">
+              <BellIcon className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+              <p>No announcements at the moment</p>
             </div>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="max-w-4xl mx-auto space-y-4">
               {notices.map((notice, index) => (
                 <motion.div
                   key={notice._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
-                  transition={{ delay: index * 0.1, duration: 0.4, ease: "easeOut" }}
-                  className="group"
+                  transition={{ delay: index * 0.05, duration: 0.3 }}
+                  onClick={() => {
+                    setSelectedNotice(notice);
+                    setShowNoticeModal(true);
+                  }}
+                  className="group cursor-pointer"
                 >
-                  <div className="h-full p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-100">
-                    {/* Priority Bar */}
-                    <div className={`h-1 w-full rounded-full mb-4 ${
-                      notice.priority === 'urgent' ? 'bg-linear-to-r from-red-500 to-rose-600' :
-                      notice.priority === 'high' ? 'bg-linear-to-r from-orange-500 to-amber-600' :
-                      notice.priority === 'normal' ? 'bg-linear-to-r from-blue-500 to-blue-600' :
-                      'bg-linear-to-r from-gray-400 to-gray-500'
-                    }`}></div>
-
-                    {/* Priority Badge & Icon */}
-                    <div className="flex items-start gap-3 mb-4">
-                      <div className={`p-2.5 rounded-xl shrink-0 ${
-                        notice.priority === 'urgent' ? 'bg-red-100' :
-                        notice.priority === 'high' ? 'bg-orange-100' :
-                        notice.priority === 'normal' ? 'bg-blue-100' :
-                        'bg-gray-100'
-                      }`}>
-                        {notice.priority === 'urgent' ? (
-                          <ExclamationTriangleIcon className={`w-5 h-5 ${
-                            notice.priority === 'urgent' ? 'text-red-600' :
-                            notice.priority === 'high' ? 'text-orange-600' :
-                            'text-blue-600'
-                          }`} />
-                        ) : (
-                          <BellIcon className={`w-5 h-5 ${
-                            notice.priority === 'high' ? 'text-orange-600' :
-                            notice.priority === 'normal' ? 'text-blue-600' :
-                            'text-gray-600'
-                          }`} />
-                        )}
+                  <div className="flex gap-4 p-4 sm:p-5 rounded-lg border border-gray-200 hover:border-[#31757A] hover:shadow-md transition-all duration-200 bg-white">
+                    {/* Date Badge */}
+                    <div className="shrink-0 text-center">
+                      <div className="w-14 sm:w-16 py-2 rounded-lg bg-gray-50 border border-gray-200">
+                        <div className="text-xs text-gray-500 uppercase font-medium">
+                          {new Date(notice.createdAt).toLocaleDateString('en-IN', { month: 'short' })}
+                        </div>
+                        <div className="text-xl sm:text-2xl font-bold text-[#31757A]">
+                          {new Date(notice.createdAt).getDate()}
+                        </div>
                       </div>
-
-                      <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase ${
-                        notice.priority === 'urgent' ? 'bg-red-100 text-red-800' :
-                        notice.priority === 'high' ? 'bg-orange-100 text-orange-800' :
-                        notice.priority === 'normal' ? 'bg-blue-100 text-blue-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {notice.priority}
-                      </span>
                     </div>
 
-                    {/* Title */}
-                    <h3 className="text-lg sm:text-xl font-bold text-[#1F2E2E] mb-3 line-clamp-2 group-hover:text-[#31757A] transition-colors">
-                      {notice.title}
-                    </h3>
-
                     {/* Content */}
-                    <p className="text-sm text-gray-600 leading-relaxed mb-4 line-clamp-3">
-                      {notice.content}
-                    </p>
-
-                    {/* Meta Info */}
-                    <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 pt-4 border-t border-gray-200">
-                      <div className="flex items-center gap-1.5">
-                        <CalendarIcon className="w-4 h-4 text-blue-600" />
-                        <span>{new Date(notice.createdAt).toLocaleDateString('en-IN', {
-                          day: 'numeric',
-                          month: 'short'
-                        })}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <EyeIcon className="w-4 h-4 text-purple-600" />
-                        <span>{notice.views || 0} views</span>
-                      </div>
-                      {(notice.expiryDate || notice.expiresAt) && (
-                        <div className="flex items-center gap-1.5 text-red-600 font-semibold">
-                          <ExclamationTriangleIcon className="w-4 h-4" />
-                          <span>Expires: {new Date(notice.expiryDate || notice.expiresAt).toLocaleDateString('en-IN', {
-                            day: 'numeric',
-                            month: 'short'
-                          })}</span>
-                        </div>
-                      )}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-[#31757A] transition-colors line-clamp-1 mb-2">
+                        {notice.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 line-clamp-2 mb-2">
+                        {notice.content}
+                      </p>
+                      <span className="text-xs text-[#31757A] font-medium inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Read more
+                        <ArrowRightIcon className="w-3 h-3" />
+                      </span>
                     </div>
                   </div>
                 </motion.div>
               ))}
             </div>
-          )}
-
-          {/* View All Button */}
-          {notices.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ delay: 0.3, duration: 0.4, ease: "easeOut" }}
-              className="text-center mt-8 sm:mt-12"
-            >
-              <button className="px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg bg-linear-to-r from-[#31757A] to-[#41A4A7] text-white font-semibold hover:shadow-lg transition-all duration-300 text-sm sm:text-base inline-flex items-center gap-2">
-                View All Announcements
-                <ArrowRightIcon className="w-4 h-4" />
-              </button>
-            </motion.div>
           )}
         </div>
       </section>
@@ -530,6 +467,121 @@ const HomePage = () => {
           </motion.div>
         </div>
       </section> */}
+
+      {/* Notice Detail Modal */}
+      <AnimatePresence>
+        {showNoticeModal && selectedNotice && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowNoticeModal(false)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden"
+            >
+              {/* Modal Header */}
+              <div className={`relative px-6 sm:px-8 py-6 ${
+                selectedNotice.priority === 'urgent' ? 'bg-linear-to-r from-red-500 to-rose-600' :
+                selectedNotice.priority === 'high' ? 'bg-linear-to-r from-orange-500 to-amber-600' :
+                selectedNotice.priority === 'normal' ? 'bg-linear-to-r from-[#31757A] to-[#41A4A7]' :
+                'bg-linear-to-r from-gray-500 to-gray-600'
+              }`}>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                      {selectedNotice.priority === 'urgent' ? (
+                        <ExclamationTriangleIcon className="w-7 h-7 text-white" />
+                      ) : (
+                        <BellIcon className="w-7 h-7 text-white" />
+                      )}
+                    </div>
+                    <div>
+                      {/* <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase bg-white/20 text-white backdrop-blur-sm mb-2">
+                        {selectedNotice.priority}
+                      </span> */}
+                      <h2 className="text-xl sm:text-2xl font-bold text-white">
+                        {selectedNotice.title}
+                      </h2>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowNoticeModal(false)}
+                    className="shrink-0 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors flex items-center justify-center"
+                  >
+                    <XMarkIcon className="w-6 h-6 text-white" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Modal Body */}
+              <div className="px-6 sm:px-8 py-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+                {/* Date */}
+                <div className="flex items-center gap-2 text-sm text-gray-500 mb-6 pb-4 border-b">
+                  <CalendarIcon className="w-5 h-5 text-[#31757A]" />
+                  <span className="font-medium">
+                    Posted on {new Date(selectedNotice.createdAt).toLocaleDateString('en-IN', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </span>
+                </div>
+
+                {/* Content */}
+                <div className="prose prose-gray max-w-none">
+                  <p className="text-base text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {selectedNotice.content}
+                  </p>
+                </div>
+
+                {/* Attachments if any */}
+                {selectedNotice.attachments && selectedNotice.attachments.length > 0 && (
+                  <div className="mt-6 pt-6 border-t">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                      <PaperClipIcon className="w-5 h-5 text-[#31757A]" />
+                      Attachments
+                    </h3>
+                    <div className="space-y-2">
+                      {selectedNotice.attachments.map((attachment, index) => (
+                        <a
+                          key={index}
+                          href={attachment.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+                        >
+                          <PaperClipIcon className="w-4 h-4 text-gray-400" />
+                          <span className="text-sm text-gray-700 hover:text-[#31757A]">
+                            {attachment.name || `Attachment ${index + 1}`}
+                          </span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="px-6 sm:px-8 py-4 bg-gray-50 border-t">
+                <button
+                  onClick={() => setShowNoticeModal(false)}
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-lg bg-[#31757A] hover:bg-[#41A4A7] text-white font-semibold transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
