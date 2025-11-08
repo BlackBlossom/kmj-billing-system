@@ -242,12 +242,13 @@ export const STAT_ICONS = {
 
 // Navigation Menu (Admin)
 export const ADMIN_NAV = [
-  { label: 'Dashboard', path: '/admin', icon: 'LayoutDashboard' },
+  { label: 'Dashboard', path: '/admin/dashboard', icon: 'LayoutDashboard' },
   { label: 'Members', path: '/admin/members', icon: 'Users' },
-  { label: 'Billing', path: '/admin/billing', icon: 'CreditCard' },
+  { label: 'Quick Pay', path: '/admin/quick-pay', icon: 'CreditCard' },
+  { label: 'Bills', path: '/admin/bills', icon: 'Receipt' },
   { label: 'Notices', path: '/admin/notices', icon: 'Megaphone' },
-  { label: 'Reports', path: '/admin/reports', icon: 'BarChart3' },
-  { label: 'Settings', path: '/admin/settings', icon: 'Settings' },
+  // { label: 'Reports', path: '/admin/reports', icon: 'BarChart3' },
+  // { label: 'Settings', path: '/admin/settings', icon: 'Settings' },
 ];
 
 // Navigation Menu (User)
@@ -256,7 +257,7 @@ export const USER_NAV = [
   { label: 'Profile', path: '/profile', icon: 'User' },
   { label: 'Family', path: '/family', icon: 'Users' },
   { label: 'Bills', path: '/bills', icon: 'Receipt' },
-  { label: 'Settings', path: '/settings', icon: 'Settings' },
+  // { label: 'Settings', path: '/settings', icon: 'Settings' },
 ];
 
 // API Base URL

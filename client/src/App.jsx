@@ -28,6 +28,16 @@ import ContactPage from './pages/public/ContactPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UserDashboard from './pages/user/UserDashboard';
 
+// Admin Pages
+import MembersPage from './pages/admin/MembersPage';
+import MemberFormPage from './pages/admin/MemberFormPage';
+import QuickPayPage from './pages/admin/QuickPayPage';
+import BillsPage from './pages/admin/BillsPage';
+import NoticesPage from './pages/admin/NoticesPage';
+
+// Public Pages (additional)
+import ReceiptPage from './pages/public/ReceiptPage';
+
 // 404 Page
 const NotFoundPage = () => (
   <div className="min-h-screen flex items-center justify-center bg-neutral-50">
@@ -95,6 +105,62 @@ function App() {
           element={
             <ProtectedRoute requireAdmin>
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/members"
+          element={
+            <ProtectedRoute requireAdmin>
+              <MembersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/members/add"
+          element={
+            <ProtectedRoute requireAdmin>
+              <MemberFormPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/members/edit/:id"
+          element={
+            <ProtectedRoute requireAdmin>
+              <MemberFormPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/quick-pay"
+          element={
+            <ProtectedRoute requireAdmin>
+              <QuickPayPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/bills"
+          element={
+            <ProtectedRoute requireAdmin>
+              <BillsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/notices"
+          element={
+            <ProtectedRoute requireAdmin>
+              <NoticesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/receipt/:id"
+          element={
+            <ProtectedRoute requireAdmin>
+              <ReceiptPage />
             </ProtectedRoute>
           }
         />

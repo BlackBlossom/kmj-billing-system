@@ -13,6 +13,8 @@ import Bill from '../models/Bill.js';
 import Member from '../models/Member.js';
 import User from '../models/User.js';
 import Counter from '../models/Counter.js';
+import Account from '../models/Account.js';
+import EidAnual from '../models/EidAnual.js';
 import { AppError } from '../middleware/errorHandler.js';
 
 /**
@@ -199,59 +201,139 @@ export const getAllBills = async (req, res, next) => {
       limit = 20,
       mahalId = '',
       accountType = '',
+      paymentMethod = '',
       startDate = '',
       endDate = '',
+      minAmount = '',
+      maxAmount = '',
       sortBy = 'createdAt',
       sortOrder = 'desc'
     } = req.query;
 
-    // Build filter
-    const filter = {};
+    // Build filters for each collection
+    const buildFilters = (dateField, mahalIdField) => {
+      const filter = {};
 
-    // If user (not admin), only show their bills
-    if (req.user.role !== 'admin') {
-      filter.mahalId = req.user.memberId;
-    }
+      // Mahal ID filter
+      if (mahalId) {
+        filter[mahalIdField] = mahalId;
+      }
 
-    // Mahal ID filter
-    if (mahalId) {
-      filter.mahalId = mahalId;
-    }
+      // Payment method filter
+      if (paymentMethod) {
+        filter.paymentMethod = paymentMethod;
+      }
 
-    // Account type filter
-    if (accountType) {
-      filter.accountType = accountType;
-    }
+      // Date range filter
+      if (startDate || endDate) {
+        filter[dateField] = {};
+        if (startDate) filter[dateField].$gte = new Date(startDate);
+        if (endDate) filter[dateField].$lte = new Date(endDate);
+      }
 
-    // Date range filter
-    if (startDate || endDate) {
-      filter.createdAt = {};
-      if (startDate) filter.createdAt.$gte = new Date(startDate);
-      if (endDate) filter.createdAt.$lte = new Date(endDate);
-    }
+      // Amount range filter
+      if (minAmount || maxAmount) {
+        filter.amount = {};
+        if (minAmount) filter.amount.$gte = parseFloat(minAmount);
+        if (maxAmount) filter.amount.$lte = parseFloat(maxAmount);
+      }
 
-    // Pagination
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-    const sortOptions = {};
-    sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
+      return filter;
+    };
 
-    // Execute query
-    const [bills, totalCount] = await Promise.all([
-      Bill.find(filter)
-        .sort(sortOptions)
-        .skip(skip)
-        .limit(parseInt(limit))
+    // Fetch from all three collections
+    const [billRecords, accountRecords, eidAnualRecords] = await Promise.all([
+      // Bills collection
+      Bill.find(buildFilters('createdAt', 'mahalId'))
+        .populate('memberId', 'Fname Mid')
         .lean(),
-      Bill.countDocuments(filter)
+      
+      // Accounts collection (land, madrassa, nercha, sadhu)
+      Account.find(buildFilters('Date', 'Mahal_Id'))
+        .populate('memberId', 'Fname Mid')
+        .lean(),
+      
+      // EidAnual collection
+      EidAnual.find(buildFilters('date', 'mahal_ID'))
+        .populate('memberId', 'Fname Mid')
+        .lean()
     ]);
 
-    // Calculate pagination metadata
+    console.log('Fetched records:', {
+      bills: billRecords.length,
+      accounts: accountRecords.length,
+      eidAnual: eidAnualRecords.length
+    });
+
+    // Normalize all records to a common format
+    const normalizeBill = (record, source) => ({
+      _id: record._id,
+      receiptNo: record.receiptNo || 'N/A',
+      amount: record.amount,
+      paymentMethod: record.paymentMethod || 'Cash',
+      notes: record.notes,
+      memberId: record.memberId,
+      collectedBy: record.collectedBy,
+      isActive: record.isActive,
+      // Normalize date field
+      createdAt: record.createdAt || record.date || record.Date,
+      updatedAt: record.updatedAt,
+      // Normalize Mahal ID field
+      mahalId: record.mahalId || record.Mahal_Id || record.mahal_ID,
+      // Normalize type/category field
+      accountType: record.accountType || record.category,
+      category: record.category,
+      // Additional fields
+      address: record.address,
+      financialYear: record.financialYear,
+      // Source collection for reference
+      _source: source,
+      // Account-specific fields
+      ...(source === 'account' && {
+        studentName: record.studentName,
+        class: record.class,
+        occasion: record.occasion,
+        purpose: record.purpose
+      })
+    });
+
+    // Combine all records
+    const allBills = [
+      ...billRecords.map(b => normalizeBill(b, 'bill')),
+      ...accountRecords.map(a => normalizeBill(a, 'account')),
+      ...eidAnualRecords.map(e => normalizeBill(e, 'eidanual'))
+    ];
+
+    // Filter by account type if specified
+    const filteredBills = accountType 
+      ? allBills.filter(b => 
+          b.accountType?.toLowerCase() === accountType.toLowerCase() || 
+          b.category?.toLowerCase() === accountType.toLowerCase()
+        )
+      : allBills;
+
+    // Sort bills
+    filteredBills.sort((a, b) => {
+      const aVal = a[sortBy] || a.createdAt;
+      const bVal = b[sortBy] || b.createdAt;
+      
+      if (sortOrder === 'asc') {
+        return aVal > bVal ? 1 : -1;
+      } else {
+        return aVal < bVal ? 1 : -1;
+      }
+    });
+
+    // Calculate pagination
+    const totalCount = filteredBills.length;
     const totalPages = Math.ceil(totalCount / parseInt(limit));
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const paginatedBills = filteredBills.slice(skip, skip + parseInt(limit));
 
     res.status(200).json({
       success: true,
       data: {
-        bills,
+        bills: paginatedBills,
         pagination: {
           currentPage: parseInt(page),
           totalPages,
@@ -263,6 +345,7 @@ export const getAllBills = async (req, res, next) => {
       }
     });
   } catch (error) {
+    console.error('Error in getAllBills:', error);
     next(error);
   }
 };
@@ -445,96 +528,186 @@ export const deleteBill = async (req, res, next) => {
  */
 export const getBillStats = async (req, res, next) => {
   try {
-    const { startDate, endDate } = req.query;
+    const { startDate, endDate, accountType } = req.query;
 
     // Build date filter
-    const dateFilter = {};
-    if (startDate || endDate) {
-      dateFilter.createdAt = {};
-      if (startDate) dateFilter.createdAt.$gte = new Date(startDate);
-      if (endDate) dateFilter.createdAt.$lte = new Date(endDate);
-    }
-
-    // Total bills and revenue
-    const totalStats = await Bill.aggregate([
-      { $match: { isActive: true, ...dateFilter } },
-      {
-        $group: {
-          _id: null,
-          totalBills: { $sum: 1 },
-          totalRevenue: { $sum: '$amount' },
-          avgBillAmount: { $avg: '$amount' }
-        }
+    const buildDateFilter = (dateField) => {
+      const filter = {};
+      if (startDate || endDate) {
+        filter[dateField] = {};
+        if (startDate) filter[dateField].$gte = new Date(startDate);
+        if (endDate) filter[dateField].$lte = new Date(endDate);
       }
+      return filter;
+    };
+
+    // Fetch stats from all three collections
+    const [billStats, accountStats, eidAnualStats] = await Promise.all([
+      Bill.aggregate([
+        { $match: buildDateFilter('createdAt') },
+        {
+          $group: {
+            _id: null,
+            totalBills: { $sum: 1 },
+            totalRevenue: { $sum: '$amount' },
+            avgBillAmount: { $avg: '$amount' }
+          }
+        }
+      ]),
+      Account.aggregate([
+        { $match: buildDateFilter('Date') },
+        {
+          $group: {
+            _id: null,
+            totalBills: { $sum: 1 },
+            totalRevenue: { $sum: '$amount' },
+            avgBillAmount: { $avg: '$amount' }
+          }
+        }
+      ]),
+      EidAnual.aggregate([
+        { $match: buildDateFilter('date') },
+        {
+          $group: {
+            _id: null,
+            totalBills: { $sum: 1 },
+            totalRevenue: { $sum: '$amount' },
+            avgBillAmount: { $avg: '$amount' }
+          }
+        }
+      ])
     ]);
 
-    // Revenue by account type
-    const revenueByAccount = await Bill.aggregate([
-      { $match: { isActive: true, ...dateFilter } },
-      {
-        $group: {
-          _id: '$accountType',
-          count: { $sum: 1 },
-          revenue: { $sum: '$amount' }
+    console.log('Stats from collections:', {
+      billStats,
+      accountStats,
+      eidAnualStats
+    });
+
+    // Combine stats
+    const combinedStats = {
+      totalBills: 
+        (billStats[0]?.totalBills || 0) + 
+        (accountStats[0]?.totalBills || 0) + 
+        (eidAnualStats[0]?.totalBills || 0),
+      totalRevenue: 
+        (billStats[0]?.totalRevenue || 0) + 
+        (accountStats[0]?.totalRevenue || 0) + 
+        (eidAnualStats[0]?.totalRevenue || 0),
+      avgBillAmount: 
+        ((billStats[0]?.avgBillAmount || 0) + 
+         (accountStats[0]?.avgBillAmount || 0) + 
+         (eidAnualStats[0]?.avgBillAmount || 0)) / 3
+    };
+
+    // Get revenue by account type from all collections
+    const [billsByType, accountsByType, eidAnualByType] = await Promise.all([
+      Bill.aggregate([
+        { $match: buildDateFilter('createdAt') },
+        {
+          $group: {
+            _id: '$accountType',
+            count: { $sum: 1 },
+            revenue: { $sum: '$amount' }
+          }
         }
-      },
-      { $sort: { revenue: -1 } }
+      ]),
+      Account.aggregate([
+        { $match: buildDateFilter('Date') },
+        {
+          $group: {
+            _id: '$category',
+            count: { $sum: 1 },
+            revenue: { $sum: '$amount' }
+          }
+        }
+      ]),
+      EidAnual.aggregate([
+        { $match: buildDateFilter('date') },
+        {
+          $group: {
+            _id: '$category',
+            count: { $sum: 1 },
+            revenue: { $sum: '$amount' }
+          }
+        }
+      ])
     ]);
 
-    // Revenue by month (last 12 months)
-    const monthlyRevenue = await Bill.aggregate([
-      {
-        $match: {
-          isActive: true,
-          createdAt: { $gte: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) }
-        }
-      },
-      {
-        $group: {
-          _id: {
-            year: { $year: '$createdAt' },
-            month: { $month: '$createdAt' }
-          },
-          revenue: { $sum: '$amount' },
-          count: { $sum: 1 }
-        }
-      },
-      { $sort: { '_id.year': 1, '_id.month': 1 } }
+    // Combine and merge revenue by type
+    const revenueByAccountMap = new Map();
+    
+    [...billsByType, ...accountsByType, ...eidAnualByType].forEach(item => {
+      if (item._id) {
+        const existing = revenueByAccountMap.get(item._id) || { _id: item._id, count: 0, revenue: 0 };
+        existing.count += item.count;
+        existing.revenue += item.revenue;
+        revenueByAccountMap.set(item._id, existing);
+      }
+    });
+
+    const revenueByAccount = Array.from(revenueByAccountMap.values())
+      .sort((a, b) => b.revenue - a.revenue);
+
+    // Calculate today's and this month's collection
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    
+    const [todayBills, todayAccounts, todayEidAnual] = await Promise.all([
+      Bill.aggregate([
+        { $match: { createdAt: { $gte: today } } },
+        { $group: { _id: null, amount: { $sum: '$amount' } } }
+      ]),
+      Account.aggregate([
+        { $match: { Date: { $gte: today } } },
+        { $group: { _id: null, amount: { $sum: '$amount' } } }
+      ]),
+      EidAnual.aggregate([
+        { $match: { date: { $gte: today } } },
+        { $group: { _id: null, amount: { $sum: '$amount' } } }
+      ])
     ]);
 
-    // Top paying members
-    const topMembers = await Bill.aggregate([
-      { $match: { isActive: true, ...dateFilter } },
-      {
-        $group: {
-          _id: '$mahalId',
-          memberName: { $first: '$memberName' },
-          totalPaid: { $sum: '$amount' },
-          billCount: { $sum: 1 }
-        }
-      },
-      { $sort: { totalPaid: -1 } },
-      { $limit: 10 }
+    const [monthBills, monthAccounts, monthEidAnual] = await Promise.all([
+      Bill.aggregate([
+        { $match: { createdAt: { $gte: firstDayOfMonth } } },
+        { $group: { _id: null, amount: { $sum: '$amount' } } }
+      ]),
+      Account.aggregate([
+        { $match: { Date: { $gte: firstDayOfMonth } } },
+        { $group: { _id: null, amount: { $sum: '$amount' } } }
+      ]),
+      EidAnual.aggregate([
+        { $match: { date: { $gte: firstDayOfMonth } } },
+        { $group: { _id: null, amount: { $sum: '$amount' } } }
+      ])
     ]);
 
-    // Recent bills (last 10)
-    const recentBills = await Bill.find({ isActive: true })
-      .sort({ createdAt: -1 })
-      .limit(10)
-      .select('receiptNo mahalId memberName amount accountType createdAt')
-      .lean();
+    const todayAmount = 
+      (todayBills[0]?.amount || 0) + 
+      (todayAccounts[0]?.amount || 0) + 
+      (todayEidAnual[0]?.amount || 0);
+
+    const monthAmount = 
+      (monthBills[0]?.amount || 0) + 
+      (monthAccounts[0]?.amount || 0) + 
+      (monthEidAnual[0]?.amount || 0);
 
     res.status(200).json({
       success: true,
       data: {
-        overview: totalStats[0] || { totalBills: 0, totalRevenue: 0, avgBillAmount: 0 },
-        revenueByAccount,
-        monthlyRevenue,
-        topMembers,
-        recentBills
+        overview: {
+          ...combinedStats,
+          todayAmount,
+          monthAmount
+        },
+        revenueByAccount
       }
     });
   } catch (error) {
+    console.error('Error in getBillStats:', error);
     next(error);
   }
 };
@@ -548,33 +721,88 @@ export const getBillStats = async (req, res, next) => {
  */
 export const getReceiptData = async (req, res, next) => {
   try {
-    const bill = await Bill.findById(req.params.id);
+    const billId = req.params.id;
+    
+    // Try to find in all three collections
+    const [bill, account, eidAnual] = await Promise.all([
+      Bill.findById(billId).populate('memberId', 'Fname Mid Address').lean(),
+      Account.findById(billId).populate('memberId', 'Fname Mid Address').lean(),
+      EidAnual.findById(billId).populate('memberId', 'Fname Mid Address').lean()
+    ]);
 
-    if (!bill) {
-      return next(new AppError('Bill not found', 404));
+    const record = bill || account || eidAnual;
+
+    if (!record) {
+      return next(new AppError('Bill/Receipt not found', 404));
     }
+
+    // Normalize the data from different collections
+    const mahalId = record.mahalId || record.Mahal_Id || record.mahal_ID;
+    const memberName = record.memberId?.Fname || record.memberName || 'N/A';
+    const memberAddress = record.memberId?.Address || record.address || 'N/A';
+    const recordDate = record.createdAt || record.date || record.Date;
+    const accountType = record.accountType || record.category;
 
     // Authorization: User can only view own bills
-    if (req.user.role !== 'admin' && bill.mahalId !== req.user.memberId) {
+    if (req.user.role !== 'admin' && mahalId !== req.user.memberId) {
       return next(new AppError('Not authorized to view this receipt', 403));
     }
+
+    // Convert amount to words (Indian numbering)
+    const convertToWords = (num) => {
+      const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+      const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+      
+      if ((num = num.toString()).length > 9) return 'Amount too large';
+      const n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+      if (!n) return '';
+      
+      let str = '';
+      str += (n[1] != 0) ? (a[Number(n[1])] || b[n[1][0]] + ' ' + a[n[1][1]]) + ' Crore ' : '';
+      str += (n[2] != 0) ? (a[Number(n[2])] || b[n[2][0]] + ' ' + a[n[2][1]]) + ' Lakh ' : '';
+      str += (n[3] != 0) ? (a[Number(n[3])] || b[n[3][0]] + ' ' + a[n[3][1]]) + ' Thousand ' : '';
+      str += (n[4] != 0) ? (a[Number(n[4])] || b[n[4][0]] + ' ' + a[n[4][1]]) + ' Hundred ' : '';
+      str += (n[5] != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) + ' Only' : '';
+      
+      return str.trim();
+    };
+
+    const amountInWords = convertToWords(Math.floor(record.amount));
 
     // Format receipt data (matching PHP Bill_Print.php)
     const receiptData = {
       organizationName: 'Kalloor Muslim JamaAth',
       organizationAddress: 'Kalloor, Kerala',
-      receiptNo: bill.receiptNo,
-      date: bill.createdAt.toLocaleDateString('en-IN'),
-      time: bill.createdAt.toLocaleTimeString('en-IN'),
-      mahalId: bill.mahalId,
-      memberName: bill.memberName,
-      memberAddress: bill.memberAddress,
-      amount: bill.amount,
-      amountInWords: bill.amountInWords,
-      accountType: bill.accountType,
-      paymentMethod: bill.paymentMethod,
-      notes: bill.notes,
-      createdBy: bill.createdByName
+      receiptNo: record.receiptNo || 'N/A',
+      date: new Date(recordDate).toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      }),
+      time: new Date(recordDate).toLocaleTimeString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }),
+      mahalId: mahalId,
+      memberName: memberName,
+      memberAddress: memberAddress,
+      amount: record.amount,
+      amountInWords: amountInWords,
+      accountType: accountType,
+      category: record.category,
+      paymentMethod: record.paymentMethod || 'Cash',
+      notes: record.notes || '',
+      financialYear: record.financialYear,
+      // Additional fields for different types
+      ...(account && {
+        studentName: account.studentName,
+        class: account.class,
+        occasion: account.occasion,
+        purpose: account.purpose
+      }),
+      collectedBy: record.collectedBy,
+      _source: bill ? 'bill' : account ? 'account' : 'eidanual'
     };
 
     res.status(200).json({
@@ -582,6 +810,7 @@ export const getReceiptData = async (req, res, next) => {
       data: receiptData
     });
   } catch (error) {
+    console.error('Error in getReceiptData:', error);
     next(error);
   }
 };

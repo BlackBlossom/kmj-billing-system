@@ -20,7 +20,8 @@ import {
   searchMembers,
   getFamilyMembers,
   getMemberStats,
-  importMembers
+  importMembers,
+  getMemberCount
 } from '../controllers/memberController.js';
 
 const router = express.Router();
@@ -56,6 +57,23 @@ router.get('/', validatePagination, getAllMembers);
  * - type: Search type (all|name|id|aadhaar|phone)
  */
 router.get('/search', validateSearch, searchMembers);
+
+/**
+ * @route   GET /api/v1/members/count
+ * @desc    Get total count of members (for pagination)
+ * @access  Private
+ * 
+ * Query params (optional filters):
+ * - ward: Filter by ward
+ * - gender: Filter by gender
+ * - relation: Filter by relation
+ * 
+ * Returns:
+ * - totalMembers: Total count of members
+ * - totalPages: Number of pages (with 100 items per page)
+ * - itemsPerPage: 100
+ */
+router.get('/count', getMemberCount);
 
 /**
  * @route   GET /api/v1/members/stats
