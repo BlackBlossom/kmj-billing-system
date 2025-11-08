@@ -210,8 +210,9 @@ export const HEALTH_STATUS = {
 
 // Notice Priority
 export const NOTICE_PRIORITY = {
+  URGENT: 'urgent',
   HIGH: 'high',
-  MEDIUM: 'medium',
+  NORMAL: 'normal',
   LOW: 'low',
 };
 

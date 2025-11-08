@@ -17,7 +17,12 @@ import {
   MapPinIcon,
   PhoneIcon,
   EnvelopeIcon,
+  ExclamationTriangleIcon,
+  EyeIcon,
+  CalendarIcon,
 } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
+import { getAllNotices } from '../../services/noticeService';
 
 // Import images
 import banner1 from '../../assets/Images/banner-1.jpg';
@@ -26,12 +31,32 @@ import banner4 from '../../assets/Images/banner-4.jpg';
 
 const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [notices, setNotices] = useState([]);
+  const [loadingNotices, setLoadingNotices] = useState(true);
   const location = useLocation();
 
   // Smooth scroll to top on page change
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [location]);
+
+  // Fetch notices
+  useEffect(() => {
+    const fetchNotices = async () => {
+      try {
+        setLoadingNotices(true);
+        const response = await getAllNotices({ limit: 6, page: 1 }); // Get latest 6 notices
+        setNotices(response.data.notices);
+      } catch (error) {
+        console.error('Error fetching notices:', error);
+        // Silently fail - don't show error toast on home page
+      } finally {
+        setLoadingNotices(false);
+      }
+    };
+
+    fetchNotices();
+  }, []);
 
   // Carousel images
   const slides = [
@@ -285,6 +310,149 @@ const HomePage = () => {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Notices Section */}
+      <section id="notices" className="py-12 sm:py-16 lg:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="text-center mb-12 sm:mb-16"
+          >
+            <div className="inline-flex items-center gap-3 mb-4">
+              <BellIcon className="w-8 h-8 text-[#31757A]" />
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1F2E2E]">
+                Latest Announcements
+              </h2>
+            </div>
+            <div className="w-16 sm:w-20 h-1 bg-linear-to-r from-[#31757A] to-[#41A4A7] mx-auto rounded-full mb-3 sm:mb-4" />
+            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
+              Stay updated with community news and important announcements
+            </p>
+          </motion.div>
+
+          {/* Notices Grid */}
+          {loadingNotices ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#31757A]"></div>
+            </div>
+          ) : notices.length === 0 ? (
+            <div className="text-center py-12">
+              <BellIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500">No announcements available at the moment</p>
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              {notices.map((notice, index) => (
+                <motion.div
+                  key={notice._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ delay: index * 0.1, duration: 0.4, ease: "easeOut" }}
+                  className="group"
+                >
+                  <div className="h-full p-6 rounded-2xl bg-gray-50 hover:bg-white hover:shadow-xl transition-all duration-300 border border-gray-100">
+                    {/* Priority Bar */}
+                    <div className={`h-1 w-full rounded-full mb-4 ${
+                      notice.priority === 'urgent' ? 'bg-linear-to-r from-red-500 to-rose-600' :
+                      notice.priority === 'high' ? 'bg-linear-to-r from-orange-500 to-amber-600' :
+                      notice.priority === 'normal' ? 'bg-linear-to-r from-blue-500 to-blue-600' :
+                      'bg-linear-to-r from-gray-400 to-gray-500'
+                    }`}></div>
+
+                    {/* Priority Badge & Icon */}
+                    <div className="flex items-start gap-3 mb-4">
+                      <div className={`p-2.5 rounded-xl shrink-0 ${
+                        notice.priority === 'urgent' ? 'bg-red-100' :
+                        notice.priority === 'high' ? 'bg-orange-100' :
+                        notice.priority === 'normal' ? 'bg-blue-100' :
+                        'bg-gray-100'
+                      }`}>
+                        {notice.priority === 'urgent' ? (
+                          <ExclamationTriangleIcon className={`w-5 h-5 ${
+                            notice.priority === 'urgent' ? 'text-red-600' :
+                            notice.priority === 'high' ? 'text-orange-600' :
+                            'text-blue-600'
+                          }`} />
+                        ) : (
+                          <BellIcon className={`w-5 h-5 ${
+                            notice.priority === 'high' ? 'text-orange-600' :
+                            notice.priority === 'normal' ? 'text-blue-600' :
+                            'text-gray-600'
+                          }`} />
+                        )}
+                      </div>
+
+                      <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase ${
+                        notice.priority === 'urgent' ? 'bg-red-100 text-red-800' :
+                        notice.priority === 'high' ? 'bg-orange-100 text-orange-800' :
+                        notice.priority === 'normal' ? 'bg-blue-100 text-blue-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {notice.priority}
+                      </span>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="text-lg sm:text-xl font-bold text-[#1F2E2E] mb-3 line-clamp-2 group-hover:text-[#31757A] transition-colors">
+                      {notice.title}
+                    </h3>
+
+                    {/* Content */}
+                    <p className="text-sm text-gray-600 leading-relaxed mb-4 line-clamp-3">
+                      {notice.content}
+                    </p>
+
+                    {/* Meta Info */}
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 pt-4 border-t border-gray-200">
+                      <div className="flex items-center gap-1.5">
+                        <CalendarIcon className="w-4 h-4 text-blue-600" />
+                        <span>{new Date(notice.createdAt).toLocaleDateString('en-IN', {
+                          day: 'numeric',
+                          month: 'short'
+                        })}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <EyeIcon className="w-4 h-4 text-purple-600" />
+                        <span>{notice.views || 0} views</span>
+                      </div>
+                      {(notice.expiryDate || notice.expiresAt) && (
+                        <div className="flex items-center gap-1.5 text-red-600 font-semibold">
+                          <ExclamationTriangleIcon className="w-4 h-4" />
+                          <span>Expires: {new Date(notice.expiryDate || notice.expiresAt).toLocaleDateString('en-IN', {
+                            day: 'numeric',
+                            month: 'short'
+                          })}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+
+          {/* View All Button */}
+          {notices.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: 0.3, duration: 0.4, ease: "easeOut" }}
+              className="text-center mt-8 sm:mt-12"
+            >
+              <button className="px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg bg-linear-to-r from-[#31757A] to-[#41A4A7] text-white font-semibold hover:shadow-lg transition-all duration-300 text-sm sm:text-base inline-flex items-center gap-2">
+                View All Announcements
+                <ArrowRightIcon className="w-4 h-4" />
+              </button>
+            </motion.div>
+          )}
         </div>
       </section>
 

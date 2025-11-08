@@ -22,11 +22,6 @@ const noticeSchema = new mongoose.Schema(
       required: [true, 'Author is required'],
       index: true,
     },
-    publishDate: {
-      type: Date,
-      default: Date.now,
-      index: true,
-    },
     expiryDate: {
       type: Date,
     },
@@ -66,7 +61,7 @@ const noticeSchema = new mongoose.Schema(
         values: Object.values(NOTICE_PRIORITY),
         message: 'Invalid priority level',
       },
-      default: NOTICE_PRIORITY.MEDIUM,
+      default: NOTICE_PRIORITY.NORMAL,
       index: true,
     },
     attachments: [
@@ -171,15 +166,14 @@ const noticeSchema = new mongoose.Schema(
 );
 
 // Indexes
-noticeSchema.index({ publishDate: -1 });
-noticeSchema.index({ isActive: 1, publishDate: -1 });
-noticeSchema.index({ isPinned: -1, publishDate: -1 });
-noticeSchema.index({ category: 1, publishDate: -1 });
+noticeSchema.index({ createdAt: -1 });
+noticeSchema.index({ isActive: 1, createdAt: -1 });
+noticeSchema.index({ isPinned: -1, createdAt: -1 });
+noticeSchema.index({ category: 1, createdAt: -1 });
 noticeSchema.index({ priority: 1, isActive: 1 });
 noticeSchema.index({ expiryDate: 1 }, { sparse: true });
 noticeSchema.index({ tags: 1 });
 noticeSchema.index({ title: 'text', content: 'text' });
-noticeSchema.index({ createdAt: -1 });
 
 // Virtual for total likes
 noticeSchema.virtual('likesCount').get(function () {
@@ -204,7 +198,7 @@ noticeSchema.virtual('isExpired').get(function () {
 
 // Virtual for formatted publish date
 noticeSchema.virtual('formattedPublishDate').get(function () {
-  return this.publishDate.toLocaleDateString('en-IN', {
+  return this.createdAt.toLocaleDateString('en-IN', {
     day: '2-digit',
     month: 'long',
     year: 'numeric',
@@ -223,7 +217,7 @@ noticeSchema.pre('save', function (next) {
 noticeSchema.statics.getActiveNotices = function (options = {}) {
   const query = {
     isActive: true,
-    publishDate: { $lte: new Date() },
+    createdAt: { $lte: new Date() },
     $or: [{ expiryDate: { $gte: new Date() } }, { expiryDate: null }],
   };
 
@@ -232,7 +226,7 @@ noticeSchema.statics.getActiveNotices = function (options = {}) {
   if (options.targetAudience) query.targetAudience = options.targetAudience;
 
   return this.find(query)
-    .sort({ isPinned: -1, publishDate: -1 })
+    .sort({ isPinned: -1, createdAt: -1 })
     .populate('author', 'username profile.firstName profile.lastName')
     .exec();
 };
@@ -242,10 +236,10 @@ noticeSchema.statics.getPinnedNotices = function () {
   return this.find({
     isActive: true,
     isPinned: true,
-    publishDate: { $lte: new Date() },
+    createdAt: { $lte: new Date() },
     $or: [{ expiryDate: { $gte: new Date() } }, { expiryDate: null }],
   })
-    .sort({ publishDate: -1 })
+    .sort({ createdAt: -1 })
     .populate('author', 'username profile.firstName profile.lastName')
     .limit(5)
     .exec();
@@ -256,10 +250,10 @@ noticeSchema.statics.getByCategory = function (category) {
   return this.find({
     category,
     isActive: true,
-    publishDate: { $lte: new Date() },
+    createdAt: { $lte: new Date() },
     $or: [{ expiryDate: { $gte: new Date() } }, { expiryDate: null }],
   })
-    .sort({ publishDate: -1 })
+    .sort({ createdAt: -1 })
     .populate('author', 'username profile.firstName profile.lastName')
     .exec();
 };

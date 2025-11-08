@@ -19,10 +19,15 @@ import { AppError } from '../middleware/errorHandler.js';
  */
 export const getAllNotices = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, priority = '' } = req.query;
+    const { page = 1, limit = 10, priority = '', includeInactive = 'false' } = req.query;
 
-    // Build filter (only active notices)
-    const filter = { isActive: true };
+    // Build filter
+    const filter = {};
+    
+    // For admin, allow viewing inactive notices if includeInactive is true
+    if (includeInactive === 'false') {
+      filter.isActive = true;
+    }
 
     if (priority) {
       filter.priority = priority;
@@ -34,10 +39,10 @@ export const getAllNotices = async (req, res, next) => {
     // Get notices
     const [notices, totalCount] = await Promise.all([
       Notice.find(filter)
-        .sort({ priority: -1, createdAt: -1 })
+        .sort({ isPinned: -1, createdAt: -1 })
         .skip(skip)
         .limit(parseInt(limit))
-        .select('-isActive -updatedAt')
+        .populate('author', 'username email')
         .lean(),
       Notice.countDocuments(filter)
     ]);
@@ -94,18 +99,26 @@ export const createNotice = async (req, res, next) => {
       title,
       content,
       priority = 'normal',
-      expiresAt
+      expiresAt,
+      isActive = true,
+      category = 'General',
+      isPinned = false
     } = req.body;
 
-    // Create notice
+    // Create notice with author from authenticated user
     const notice = await Notice.create({
       title,
       content,
       priority,
-      expiresAt: expiresAt ? new Date(expiresAt) : null,
-      createdBy: req.user.memberId,
-      createdByName: req.user.name
+      expiryDate: expiresAt ? new Date(expiresAt) : null,
+      isActive,
+      category,
+      isPinned,
+      author: req.user.id || req.user._id // User ID from JWT token
     });
+
+    // Populate author details
+    await notice.populate('author', 'username email');
 
     res.status(201).json({
       success: true,
@@ -130,15 +143,20 @@ export const updateNotice = async (req, res, next) => {
       return next(new AppError('Notice not found', 404));
     }
 
-    const { title, content, priority, expiresAt, isActive } = req.body;
+    const { title, content, priority, expiresAt, isActive, category, isPinned } = req.body;
 
     if (title !== undefined) notice.title = title;
     if (content !== undefined) notice.content = content;
     if (priority !== undefined) notice.priority = priority;
-    if (expiresAt !== undefined) notice.expiresAt = expiresAt ? new Date(expiresAt) : null;
+    if (expiresAt !== undefined) notice.expiryDate = expiresAt ? new Date(expiresAt) : null;
     if (isActive !== undefined) notice.isActive = isActive;
+    if (category !== undefined) notice.category = category;
+    if (isPinned !== undefined) notice.isPinned = isPinned;
 
     await notice.save();
+
+    // Populate author details
+    await notice.populate('author', 'username email');
 
     res.status(200).json({
       success: true,

@@ -13,7 +13,7 @@ import {
   EyeIcon,
   CreditCardIcon,
 } from '@heroicons/react/24/outline';
-import DashboardLayout from '../../components/layout/DashboardLayout';
+import AdminLayout from '../../components/layout/AdminLayout';
 import { Card, Button, Badge, Avatar, Skeleton, AvatarGroup } from '../../components/common';
 import { ANIMATION_VARIANTS } from '../../lib/constants';
 import { formatCurrency, formatDate, formatMemberId } from '../../lib/utils';
@@ -125,7 +125,7 @@ const UserDashboard = () => {
   }, [user]);
 
   return (
-    <DashboardLayout>
+    <AdminLayout>
       {/* Header */}
       <motion.div
         variants={ANIMATION_VARIANTS.fadeIn}
@@ -432,7 +432,7 @@ const UserDashboard = () => {
           </motion.div>
         </div>
       </div>
-    </DashboardLayout>
+    </AdminLayout>
   );
 };
 

@@ -21,11 +21,15 @@ import {
   getBillStats,
   getReceiptData
 } from '../controllers/billController.js';
+import { testCollections } from '../controllers/testController.js';
 
 const router = express.Router();
 
 // All routes require authentication
 router.use(verifyToken);
+
+// Test endpoint to check collections
+router.get('/test-collections', testCollections);
 
 /**
  * @route   GET /api/v1/bills
@@ -110,13 +114,6 @@ router.get('/member/:mahalId', getMemberBills);
 router.post('/', validateBillCreation, createBill);
 
 /**
- * @route   GET /api/v1/bills/:id
- * @desc    Get single bill by ID
- * @access  Private (Admin or own bill)
- */
-router.get('/:id', validateObjectId, getBillById);
-
-/**
  * @route   GET /api/v1/bills/:id/receipt
  * @desc    Get receipt data for PDF generation
  * @access  Private (Admin or own bill)
@@ -124,6 +121,13 @@ router.get('/:id', validateObjectId, getBillById);
  * Matches: PHP Bill_Print.php format
  */
 router.get('/:id/receipt', validateObjectId, getReceiptData);
+
+/**
+ * @route   GET /api/v1/bills/:id
+ * @desc    Get single bill by ID
+ * @access  Private (Admin or own bill)
+ */
+router.get('/:id', validateObjectId, getBillById);
 
 /**
  * @route   PUT /api/v1/bills/:id

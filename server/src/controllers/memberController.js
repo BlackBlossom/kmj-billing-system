@@ -545,3 +545,43 @@ export const importMembers = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * @desc    Get total count of members (for pagination calculation)
+ * @route   GET /api/v1/members/count
+ * @access  Private
+ */
+export const getMemberCount = async (req, res, next) => {
+  try {
+    const { ward, gender, relation } = req.query;
+
+    // Build filter query
+    const filter = {};
+
+    // If user (not admin), only count their family members
+    if (req.user.role !== 'admin') {
+      filter.Mid = req.user.memberId;
+    }
+
+    // Apply filters if provided
+    if (ward) filter.Mward = ward;
+    if (gender) filter.Gender = gender;
+    if (relation) filter.Relation = relation;
+
+    const totalCount = await Member.countDocuments(filter);
+
+    // Calculate how many pages needed with limit of 100
+    const totalPages = Math.ceil(totalCount / 100);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalMembers: totalCount,
+        totalPages: totalPages,
+        itemsPerPage: 100
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
