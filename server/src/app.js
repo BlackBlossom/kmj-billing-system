@@ -34,9 +34,14 @@ app.use(helmet({
 app.use(cors({
   origin: config.cors.origin,
   credentials: config.cors.credentials,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 600, // Cache preflight request for 10 minutes
 }));
+
+// Handle preflight requests explicitly
+app.options('*', cors());
 
 // MongoDB Sanitize - Prevent NoSQL injection
 app.use(mongoSanitize());
