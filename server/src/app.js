@@ -78,6 +78,23 @@ app.get('/health', (req, res) => {
 });
 
 /**
+ * Root Endpoint
+ */
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'KMJ Billing System API',
+    version: config.apiVersion,
+    status: 'running',
+    endpoints: {
+      health: '/health',
+      api: `/api/${config.apiVersion}`,
+      documentation: `/api/${config.apiVersion}/docs`,
+    },
+  });
+});
+
+/**
  * API Base Route
  */
 app.get(`/api/${config.apiVersion}`, (req, res) => {
