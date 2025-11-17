@@ -15,7 +15,7 @@ import {
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { getAllBills, getBillStats, ACCOUNT_TYPES } from '../../services/billService';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import AdminLayout from '../../components/layout/AdminLayout';
 import { Card, Button, Badge } from '../../components/common';
 import { ANIMATION_VARIANTS } from '../../lib/constants';
@@ -23,6 +23,7 @@ import { cn } from '../../lib/utils';
 
 const BillsPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [bills, setBills] = useState([]);
   const [stats, setStats] = useState({
     totalBills: 0,
@@ -53,6 +54,15 @@ const BillsPage = () => {
   });
 
   const paymentMethods = ['Cash', 'UPI', 'Card', 'Bank Transfer', 'Cheque'];
+
+  // Check for search parameter from URL on mount
+  useEffect(() => {
+    const searchFromUrl = searchParams.get('search');
+    if (searchFromUrl) {
+      setSearchQuery(searchFromUrl);
+      setFilters(prev => ({ ...prev, mahalId: searchFromUrl }));
+    }
+  }, [searchParams]);
 
   // Fetch bills and stats
   useEffect(() => {
@@ -223,7 +233,7 @@ const BillsPage = () => {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-4xl font-bold leading-relaxed bg-linear-to-r from-[#1F2E2E] via-[#31757A] to-[#41A4A7] bg-clip-text text-transparent flex items-center gap-3">
-              <DocumentTextIcon className="w-10 h-10 text-[#31757A]" />
+              {/* <DocumentTextIcon className="w-10 h-10 text-[#31757A]" /> */}
               Billing Management
             </h1>
             <p className="text-gray-600 mt-2 text-lg">Track and manage all billing transactions</p>
@@ -513,12 +523,12 @@ const BillsPage = () => {
                   <DocumentTextIcon className="h-6 w-6 text-[#31757A]" />
                   All Bills
                 </Card.Title>
-                <Card.Description className="text-sm mt-1">
+                {/* <Card.Description className="text-sm mt-1">
                   {pagination.totalBills > 0 
                     ? `Showing ${((pagination.currentPage - 1) * pagination.limit) + 1} to ${Math.min(pagination.currentPage * pagination.limit, pagination.totalBills)} of ${pagination.totalBills} bills`
                     : 'No bills found'
                   }
-                </Card.Description>
+                </Card.Description> */}
               </div>
             </div>
           </Card.Header>
@@ -560,16 +570,16 @@ const BillsPage = () => {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-linear-to-r from-[#31757A] to-[#41A4A7] text-white">
+                  <thead className="bg-linear-to-r from-gray-50 to-[#E3F9F9]/30 border-b-2 border-gray-200">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Receipt No</th>
-                      <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Date & Time</th>
-                      <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Member ID</th>
-                      <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Member Name</th>
-                      <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Account Type</th>
-                      <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Amount</th>
-                      <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider">Payment</th>
-                      <th className="px-6 py-4 text-center text-xs font-bold uppercase tracking-wider">Actions</th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Receipt No</th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Date & Time</th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Member ID</th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Member Name</th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Account Type</th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Amount</th>
+                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Payment</th>
+                      <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-100">
@@ -647,15 +657,15 @@ const BillsPage = () => {
                             {bill.paymentMethod || 'Cash'}
                           </Badge>
                         </td>
-                        <td className="px-6 py-5 whitespace-nowrap text-center">
+                        <td className="px-6 py-5 whitespace-nowrap text-right text-sm font-medium">
                           <Button
                             variant="ghost"
                             size="sm"
+                            leftIcon={<PrinterIcon className="h-4 w-4" />}
                             onClick={() => handlePrintReceipt(bill._id)}
-                            className="text-[#31757A] hover:bg-[#E3F9F9] hover:text-[#41A4A7] transition-all"
-                            title="Print Receipt"
+                            className="text-[#31757A] hover:text-[#41A4A7] hover:bg-[#E3F9F9] border border-transparent hover:border-[#31757A] transition-all"
                           >
-                            <PrinterIcon className="w-5 h-5" />
+                            Print
                           </Button>
                         </td>
                       </motion.tr>

@@ -27,6 +27,10 @@ import ContactPage from './pages/public/ContactPage';
 // Dashboard Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UserDashboard from './pages/user/UserDashboard';
+import ProfilePage from './pages/user/ProfilePage';
+import FamilyPage from './pages/user/FamilyPage';
+import MemberForm from './pages/user/MemberForm';
+import BillsPageUser from './pages/user/BillsPage';
 
 // Admin Pages
 import MembersPage from './pages/admin/MembersPage';
@@ -34,6 +38,12 @@ import MemberFormPage from './pages/admin/MemberFormPage';
 import QuickPayPage from './pages/admin/QuickPayPage';
 import BillsPage from './pages/admin/BillsPage';
 import NoticesPage from './pages/admin/NoticesPage';
+import VouchersPage from './pages/admin/VouchersPage';
+import LandPage from './pages/admin/LandPage';
+import InventoryPage from './pages/admin/InventoryPage';
+import ReportsPage from './pages/admin/ReportsPage';
+import CertificatesPage from './pages/admin/CertificatesPage';
+import AdminProfilePage from './pages/admin/AdminProfilePage';
 
 // Public Pages (additional)
 import ReceiptPage from './pages/public/ReceiptPage';
@@ -81,7 +91,7 @@ function App() {
           path="/login"
           element={
             isAuthenticated ? (
-              <Navigate to={isAdmin() ? '/admin/dashboard' : '/dashboard'} replace />
+              <Navigate to={isAdmin() ? '/admin/dashboard' : '/user/dashboard'} replace />
             ) : (
               <LoginPage />
             )
@@ -91,7 +101,7 @@ function App() {
           path="/register"
           element={
             isAuthenticated ? (
-              <Navigate to={isAdmin() ? '/admin/dashboard' : '/dashboard'} replace />
+              <Navigate to={isAdmin() ? '/admin/dashboard' : '/user/dashboard'} replace />
             ) : (
               <RegisterPage />
             )
@@ -157,6 +167,54 @@ function App() {
           }
         />
         <Route
+          path="/admin/vouchers"
+          element={
+            <ProtectedRoute requireAdmin>
+              <VouchersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/lands"
+          element={
+            <ProtectedRoute requireAdmin>
+              <LandPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/inventory"
+          element={
+            <ProtectedRoute requireAdmin>
+              <InventoryPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/reports"
+          element={
+            <ProtectedRoute requireAdmin>
+              <ReportsPage />
+            </ProtectedRoute>
+          }
+        />
+        {/* <Route
+          path="/admin/certificates"
+          element={
+            <ProtectedRoute requireAdmin>
+              <CertificatesPage />
+            </ProtectedRoute>
+          }
+        /> */}
+        <Route
+          path="/admin/profile"
+          element={
+            <ProtectedRoute requireAdmin>
+              <AdminProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/admin/receipt/:id"
           element={
             <ProtectedRoute requireAdmin>
@@ -167,10 +225,50 @@ function App() {
 
         {/* User Routes */}
         <Route
-          path="/dashboard"
+          path="/user/dashboard"
           element={
             <ProtectedRoute>
               <UserDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/family"
+          element={
+            <ProtectedRoute>
+              <FamilyPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/family/add"
+          element={
+            <ProtectedRoute>
+              <MemberForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/family/edit/:id"
+          element={
+            <ProtectedRoute>
+              <MemberForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user/bills"
+          element={
+            <ProtectedRoute>
+              <BillsPageUser />
             </ProtectedRoute>
           }
         />

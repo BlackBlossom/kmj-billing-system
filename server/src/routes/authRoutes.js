@@ -38,6 +38,7 @@ router.post('/reset-password', resetPassword);
 router.use(verifyToken); // All routes below require authentication
 
 router.get('/me', getMe);
+router.get('/admin/profile', getMe); // Admin profile endpoint (uses same getMe logic)
 router.post('/logout', logout);
 router.put('/change-password', validatePasswordChange, changePassword);
 

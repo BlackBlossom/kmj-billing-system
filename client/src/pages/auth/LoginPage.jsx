@@ -66,7 +66,7 @@ const LoginPage = () => {
       if (result.user?.role === 'admin') {
         navigate('/admin/dashboard');
       } else {
-        navigate('/dashboard');
+        navigate('/user/dashboard');
       }
     } else {
       showToast.error(result.error || 'Login failed. Please try again.');
@@ -111,7 +111,7 @@ const LoginPage = () => {
         </div>
 
         {/* Password Input */}
-        <div className="space-y-2">
+        <div className="space-y-2 mb-10">
           <label className="block text-sm font-bold text-[#1F2E2E] tracking-wide">
             Password
           </label>
@@ -149,14 +149,14 @@ const LoginPage = () => {
         </div>
 
         {/* Forgot Password Link */}
-        <div className="flex justify-end">
+        {/* <div className="flex justify-end">
           <Link
             to="/forgot-password"
             className="text-sm text-[#31757A] hover:text-[#41A4A7] font-semibold transition-colors duration-200 hover:underline"
           >
             Forgot password?
           </Link>
-        </div>
+        </div> */}
 
         {/* Submit Button */}
         <motion.button

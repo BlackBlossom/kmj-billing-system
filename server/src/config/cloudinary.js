@@ -42,10 +42,18 @@ class CloudinaryStorage {
   }
 
   _handleFile(req, file, cb) {
+    // Determine resource type based on file mimetype
+    let resourceType = 'auto';
+    if (file.mimetype === 'application/pdf') {
+      resourceType = 'image'; // PDFs work better with image resource type
+    } else if (file.mimetype.startsWith('image/')) {
+      resourceType = 'image';
+    }
+
     const uploadOptions = {
       folder: this.options.folder,
-      resource_type: 'auto',
-      allowed_formats: this.options.allowed_formats,
+      resource_type: resourceType,
+      type: 'upload', // Ensures public delivery
     };
 
     if (this.options.transformation) {
@@ -110,9 +118,9 @@ export const documentStorage = new CloudinaryStorage({
   folder: 'kmj-billing/documents',
   allowed_formats: ['jpg', 'jpeg', 'png', 'pdf'],
   public_id: (req, file) => {
-    const memberId = req.user?.memberId || 'unknown';
+    const memberId = (req.user?.memberId || 'unknown').replace(/\//g, '-');
     const timestamp = Date.now();
-    const originalName = file.originalname.split('.')[0];
+    const originalName = file.originalname.split('.')[0].replace(/[^a-zA-Z0-9]/g, '_');
     return `doc-${memberId}-${originalName}-${timestamp}`;
   },
 });

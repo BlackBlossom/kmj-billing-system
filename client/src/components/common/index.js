@@ -21,3 +21,4 @@ export {
 } from './Loading';
 export { default as showToast, ToastContainer, toastConfig } from './Toast';
 export { default as ProtectedRoute } from './ProtectedRoute';
+export { default as FileUpload } from './FileUpload';

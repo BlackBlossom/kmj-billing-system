@@ -22,8 +22,8 @@ const Avatar = ({
     '2xl': 'h-24 w-24 text-2xl',
   };
 
-  const initials = getInitials(name || alt);
-  const gradient = generateGradient(name || alt || 'User');
+  const displayName = name || alt || 'User';
+  const initials = getInitials(displayName);
 
   return (
     <div
@@ -31,16 +31,16 @@ const Avatar = ({
         'relative inline-flex items-center justify-center',
         'rounded-full overflow-hidden',
         'font-medium text-white',
+        'bg-[#31757A]', // Brand color background
         sizes[size],
         className
       )}
-      style={{ background: src ? 'transparent' : gradient }}
       {...props}
     >
       {src ? (
         <img
           src={src}
-          alt={alt || name}
+          alt={alt || name || 'User'}
           className="h-full w-full object-cover"
         />
       ) : (

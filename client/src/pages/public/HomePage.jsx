@@ -377,9 +377,10 @@ const HomePage = () => {
                       <h3 className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-[#31757A] transition-colors line-clamp-1 mb-2">
                         {notice.title}
                       </h3>
-                      <p className="text-sm text-gray-600 line-clamp-2 mb-2">
-                        {notice.content}
-                      </p>
+                      <div 
+                        className="text-sm text-gray-600 line-clamp-2 mb-2"
+                        dangerouslySetInnerHTML={{ __html: notice.content }}
+                      />
                       <span className="text-xs text-[#31757A] font-medium inline-flex items-center gap-1 group-hover:gap-2 transition-all">
                         Read more
                         <ArrowRightIcon className="w-3 h-3" />
@@ -536,11 +537,10 @@ const HomePage = () => {
                 </div>
 
                 {/* Content */}
-                <div className="prose prose-gray max-w-none">
-                  <p className="text-base text-gray-700 leading-relaxed whitespace-pre-wrap">
-                    {selectedNotice.content}
-                  </p>
-                </div>
+                <div 
+                  className="prose prose-gray max-w-none text-base text-gray-700 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: selectedNotice.content }}
+                />
 
                 {/* Attachments if any */}
                 {selectedNotice.attachments && selectedNotice.attachments.length > 0 && (

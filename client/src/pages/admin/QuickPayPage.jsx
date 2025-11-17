@@ -20,10 +20,11 @@ import { formatCurrency, formatDate } from '../../lib/utils';
 import { searchMembers } from '../../services/memberService';
 import { createBill, getMemberBills, ACCOUNT_TYPES, numberToWords } from '../../services/billService';
 import { toast } from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const QuickPayPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [selectedMember, setSelectedMember] = useState(null);
@@ -46,6 +47,34 @@ const QuickPayPage = () => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // Check for member parameter from URL on mount and auto-select
+  useEffect(() => {
+    const memberNameFromUrl = searchParams.get('member');
+    if (memberNameFromUrl) {
+      // Automatically search for the member by name
+      setSearchQuery(memberNameFromUrl);
+      handleSearchByMemberName(memberNameFromUrl);
+    }
+  }, [searchParams]);
+
+  // Search member by name directly
+  const handleSearchByMemberName = async (memberName) => {
+    try {
+      const response = await searchMembers(memberName);
+      if (response.data && response.data.length > 0) {
+        // Auto-select the first matching member
+        const member = response.data[0];
+        handleSelectMember(member);
+        toast.success(`Member ${member.Fname} selected`);
+      } else {
+        toast.error('Member not found');
+      }
+    } catch (error) {
+      console.error('Error searching member:', error);
+      toast.error('Search failed');
+    }
+  };
 
   // Search members
   const handleSearch = async () => {

@@ -105,11 +105,33 @@ export const register = asyncHandler(async (req, res, next) => {
 export const login = asyncHandler(async (req, res, next) => {
   const { memberId, password } = req.body;
   
+  console.log('Login attempt:', { memberId, passwordProvided: !!password });
+  
+  // Check both memberId and username fields for flexibility
   // Old PHP query: SELECT * FROM table_login WHERE kmjid=? AND password=?
-  const user = await User.findOne({ memberId }).select('+password');
+  const user = await User.findOne({
+    $or: [
+      { memberId: memberId },
+      { username: memberId }
+    ]
+  }).select('+password');
+  
+  console.log('User found:', {
+    found: !!user,
+    memberId: user?.memberId,
+    username: user?.username,
+    hasPassword: !!user?.password,
+    passwordLength: user?.password?.length
+  });
   
   if (!user) {
     return next(new AppError('Invalid Member ID or password.', 401));
+  }
+  
+  // Check if user has a password
+  if (!user.password) {
+    console.log('User has no password set');
+    return next(new AppError('Account not properly set up. Please contact admin.', 401));
   }
   
   // Check if account is active
@@ -118,7 +140,48 @@ export const login = asyncHandler(async (req, res, next) => {
   }
   
   // Verify password
-  const isPasswordValid = await bcrypt.compare(password, user.password);
+  console.log('Comparing passwords...');
+  console.log('Password provided:', password);
+  console.log('Password hash in DB:', user.password);
+  console.log('User Aadhaar:', user.aadhaar);
+  
+  let isPasswordValid = false;
+  
+  // Try bcrypt comparison first (for hashed passwords)
+  try {
+    isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log('Bcrypt comparison result:', isPasswordValid);
+  } catch (error) {
+    console.log('Bcrypt comparison error:', error.message);
+  }
+  
+  // If bcrypt fails, check if it's a plain text password (for old PHP system compatibility)
+  if (!isPasswordValid && user.password === password) {
+    console.log('Plain text password match found - updating to hashed password');
+    isPasswordValid = true;
+    
+    // Update to hashed password for security
+    user.password = await bcrypt.hash(password, 10);
+    await user.save({ validateBeforeSave: false });
+  }
+  
+  // TEMPORARY FIX: If password doesn't match but provided password matches Aadhaar,
+  // update the password to Aadhaar (for migration from old system)
+  if (!isPasswordValid && user.aadhaar && password === user.aadhaar) {
+    console.log('Password matches Aadhaar - resetting password to Aadhaar hash');
+    isPasswordValid = true;
+    
+    // Temporarily disable the pre-save hook and set password directly
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.findByIdAndUpdate(user._id, { 
+      password: hashedPassword,
+      lastLogin: new Date()
+    });
+    
+    console.log('Password updated successfully');
+  }
+  
+  console.log('Final password valid:', isPasswordValid);
   
   if (!isPasswordValid) {
     return next(new AppError('Invalid Member ID or password.', 401));
@@ -129,7 +192,7 @@ export const login = asyncHandler(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
   
   // Generate tokens
-  const token = generateToken(user._id, user.memberId, user.role);
+  const token = generateToken(user._id, user.memberId || user.username, user.role);
   const refreshToken = generateRefreshToken(user._id);
   
   // Send response with user data (matching old PHP session data)
@@ -140,6 +203,7 @@ export const login = asyncHandler(async (req, res, next) => {
       user: {
         id: user._id,
         memberId: user.memberId,
+        username: user.username,
         name: user.name,
         email: user.email,
         phone: user.phone,
