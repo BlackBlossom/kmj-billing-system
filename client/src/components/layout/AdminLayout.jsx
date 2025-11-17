@@ -9,21 +9,28 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import {
-  HomeIcon,
-  UsersIcon,
-  DocumentTextIcon,
-  BellIcon,
-  ChartBarIcon,
-  Cog6ToothIcon,
-  UserCircleIcon,
-  WalletIcon,
   ArrowRightOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
   ExclamationTriangleIcon,
+  BellIcon,
+  UserCircleIcon,
 } from '@heroicons/react/24/outline';
+import {
+  LayoutDashboard,
+  Users,
+  CreditCard,
+  Receipt,
+  Megaphone,
+  FileText,
+  MapPin,
+  Package,
+  AlertCircle,
+  Award,
+  User,
+} from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { ADMIN_NAV, USER_NAV } from '../../lib/constants';
 import useAuthStore from '../../store/authStore';
@@ -36,7 +43,7 @@ const AdminLayout = ({ children, className }) => {
   const { user, logout, isAdmin } = useAuthStore();
   const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [loadingNotices, setLoadingNotices] = useState(true);
 
@@ -61,15 +68,17 @@ const AdminLayout = ({ children, className }) => {
   const unreadCount = notifications.filter(n => n.priority === 'urgent' || n.priority === 'high').length;
 
   const iconMap = {
-    Dashboard: HomeIcon,
-    Members: UsersIcon,
-    'Quick Pay': WalletIcon,
-    Bills: DocumentTextIcon,
-    Notices: BellIcon,
-    Reports: ChartBarIcon,
-    Settings: Cog6ToothIcon,
-    Profile: UserCircleIcon,
-    Family: UsersIcon,
+    LayoutDashboard,
+    Users,
+    CreditCard,
+    Receipt,
+    Megaphone,
+    FileText,
+    MapPin,
+    Package,
+    AlertCircle,
+    Award,
+    User,
   };
 
   const handleLogout = async () => {
@@ -114,12 +123,12 @@ const AdminLayout = ({ children, className }) => {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 100, damping: 20 }}
-        className="fixed top-0 left-0 right-0 h-20 bg-white/95 backdrop-blur-md border-b border-gray-200 z-40 shadow-sm"
+        className="fixed top-0 left-0 right-0 h-16 bg-white/95 backdrop-blur-md border-b border-gray-200 z-40 shadow-sm"
       >
         <div className="h-full max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="h-full flex items-center justify-between">
+          <div className="h-full flex items-center justify-between gap-4">
             {/* Left: Logo + Menu Button */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setMobileMenuOpen(true)}
@@ -129,23 +138,26 @@ const AdminLayout = ({ children, className }) => {
               </button>
 
               {/* Logo and Title */}
-              <div className="flex items-center gap-3">
+              <div 
+                className="flex items-center gap-3 cursor-pointer"
+                onClick={() => navigate('/')}
+              >
                 <img
                   src={logo}
                   alt="KMJ Logo"
-                  className="h-12 w-full object-contain"
+                  className="h-10 sm:h-12 w-auto object-contain"
                 />
-                <div className="hidden sm:block">
-                  {/* <h1 className="text-lg font-bold text-[#1F2E2E]">Kalloor Muslim Jama-ath</h1> */}
+                {/* <div className="hidden sm:block">
+                  <h1 className="text-lg font-bold text-[#1F2E2E]">Kalloor Muslim Jama-ath</h1>
                   <p className="text-xs text-[#31757A] font-medium">
                     {isAdmin() ? 'Admin Panel' : 'Member Portal'}
                   </p>
-                </div>
+                </div> */}
               </div>
             </div>
 
             {/* Right: Actions */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               {/* Notifications */}
               <Menu as="div" className="relative">
                 <Menu.Button className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
@@ -170,21 +182,21 @@ const AdminLayout = ({ children, className }) => {
                   leaveFrom="transform opacity-100 scale-100"
                   leaveTo="transform opacity-0 scale-95"
                 >
-                  <Menu.Items className="absolute right-0 mt-2 w-80 origin-top-right rounded-2xl bg-white shadow-2xl ring-1 ring-gray-200 focus:outline-none z-50">
-                    <div className="p-4 border-b border-gray-200 bg-linear-to-r from-[#E3F9F9] to-white">
+                  <Menu.Items className="fixed sm:absolute right-4 left-4 sm:left-auto sm:right-0 mt-2 sm:w-80 origin-top rounded-2xl bg-white shadow-2xl ring-1 ring-gray-200 focus:outline-none z-50">
+                    <div className="p-3 sm:p-4 border-b border-gray-200 bg-linear-to-r from-[#E3F9F9] to-white">
                       <h3 className="text-sm font-bold text-[#1F2E2E]">
                         Latest Announcements
                       </h3>
                     </div>
-                    <div className="max-h-96 overflow-y-auto">
+                    <div className="max-h-60 overflow-y-auto">
                       {loadingNotices ? (
                         <div className="flex justify-center items-center py-8">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#31757A]"></div>
                         </div>
                       ) : notifications.length === 0 ? (
-                        <div className="px-4 py-8 text-center">
-                          <BellIcon className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                          <p className="text-sm text-gray-500">No announcements</p>
+                        <div className="px-3 sm:px-4 py-8 text-center">
+                          <BellIcon className="w-10 h-10 sm:w-12 sm:h-12 text-gray-300 mx-auto mb-2" />
+                          <p className="text-xs sm:text-sm text-gray-500">No announcements</p>
                         </div>
                       ) : (
                         notifications.map((notice) => (
@@ -193,12 +205,12 @@ const AdminLayout = ({ children, className }) => {
                               <div
                                 onClick={() => navigate('/admin/notices')}
                                 className={cn(
-                                  'px-4 py-3 cursor-pointer border-b border-gray-100 transition-colors',
+                                  'px-3 sm:px-4 py-3 cursor-pointer border-b border-gray-100 transition-colors',
                                   active && 'bg-gray-50',
                                   (notice.priority === 'urgent' || notice.priority === 'high') && 'bg-[#E3F9F9]/30'
                                 )}
                               >
-                                <div className="flex items-start gap-3">
+                                <div className="flex items-start gap-2 sm:gap-3">
                                   {/* Priority Icon */}
                                   <div className={`p-1.5 rounded-lg shrink-0 ${
                                     notice.priority === 'urgent' ? 'bg-red-100' :
@@ -207,9 +219,9 @@ const AdminLayout = ({ children, className }) => {
                                     'bg-gray-100'
                                   }`}>
                                     {notice.priority === 'urgent' ? (
-                                      <ExclamationTriangleIcon className="w-4 h-4 text-red-600" />
+                                      <ExclamationTriangleIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600" />
                                     ) : (
-                                      <BellIcon className={`w-4 h-4 ${
+                                      <BellIcon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
                                         notice.priority === 'high' ? 'text-orange-600' :
                                         notice.priority === 'normal' ? 'text-blue-600' :
                                         'text-gray-600'
@@ -220,7 +232,7 @@ const AdminLayout = ({ children, className }) => {
                                   <div className="flex-1 min-w-0">
                                     {/* Priority Badge */}
                                     <div className="flex items-center gap-2 mb-1">
-                                      <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${
+                                      <span className={`px-1.5 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs font-bold uppercase ${
                                         notice.priority === 'urgent' ? 'bg-red-100 text-red-800' :
                                         notice.priority === 'high' ? 'bg-orange-100 text-orange-800' :
                                         notice.priority === 'normal' ? 'bg-blue-100 text-blue-800' :
@@ -231,17 +243,18 @@ const AdminLayout = ({ children, className }) => {
                                     </div>
                                     
                                     {/* Title */}
-                                    <p className="text-sm text-[#1F2E2E] font-medium line-clamp-1">
+                                    <p className="text-xs sm:text-sm text-[#1F2E2E] font-medium line-clamp-1">
                                       {notice.title}
                                     </p>
                                     
                                     {/* Content Preview */}
-                                    <p className="text-xs text-gray-600 mt-1 line-clamp-2">
-                                      {notice.content}
-                                    </p>
+                                    <div 
+                                      className="text-[11px] sm:text-xs text-gray-600 mt-1 line-clamp-2"
+                                      dangerouslySetInnerHTML={{ __html: notice.content }}
+                                    />
                                     
                                     {/* Time */}
-                                    <p className="text-xs text-gray-500 mt-1">
+                                    <p className="text-[10px] sm:text-xs text-gray-500 mt-1">
                                       {new Date(notice.createdAt).toLocaleDateString('en-IN', {
                                         day: 'numeric',
                                         month: 'short',
@@ -257,30 +270,30 @@ const AdminLayout = ({ children, className }) => {
                         ))
                       )}
                     </div>
-                    <div className="p-3 text-center border-t border-gray-200">
+                    { isAdmin() && <div className="p-2 sm:p-3 text-center border-t border-gray-200">
                       <button 
                         onClick={() => navigate('/admin/notices')}
-                        className="text-sm text-[#31757A] hover:text-[#41A4A7] font-semibold transition-colors"
+                        className="text-xs sm:text-sm text-[#31757A] hover:text-[#41A4A7] font-semibold transition-colors"
                       >
                         View all announcements
                       </button>
-                    </div>
+                    </div> }
                   </Menu.Items>
                 </Transition>
               </Menu>
 
               {/* Settings */}
-              <button
+              {/* <button
                 onClick={() => navigate('/settings')}
                 className="hidden sm:block p-2 rounded-lg hover:bg-gray-100 transition-colors"
                 title="Settings"
               >
                 <Cog6ToothIcon className="h-6 w-6 text-gray-600" />
-              </button>
+              </button> */}
 
               {/* User Profile Dropdown */}
               <Menu as="div" className="relative">
-                <Menu.Button className="flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-1.5 rounded-xl hover:bg-gray-100 transition-colors">
+                <Menu.Button className="flex items-center gap-2 sm:gap-3 px-2 sm:px-3 py-2 rounded-xl hover:bg-gray-100 transition-colors">
                   <Avatar
                     name={user?.name || user?.username}
                     src={user?.avatar}
@@ -318,7 +331,7 @@ const AdminLayout = ({ children, className }) => {
                       <Menu.Item>
                         {({ active }) => (
                           <button
-                            onClick={() => navigate('/profile')}
+                            onClick={() => navigate('/admin/profile')}
                             className={cn(
                               'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                               active ? 'bg-gray-100 text-[#1F2E2E]' : 'text-gray-700'
@@ -330,7 +343,7 @@ const AdminLayout = ({ children, className }) => {
                         )}
                       </Menu.Item>
                       
-                      <Menu.Item>
+                      {/* <Menu.Item>
                         {({ active }) => (
                           <button
                             onClick={() => navigate('/settings')}
@@ -343,7 +356,7 @@ const AdminLayout = ({ children, className }) => {
                             Settings
                           </button>
                         )}
-                      </Menu.Item>
+                      </Menu.Item> */}
                     </div>
 
                     <div className="p-2 border-t border-gray-200">
@@ -378,10 +391,10 @@ const AdminLayout = ({ children, className }) => {
           width: sidebarCollapsed ? '80px' : '280px'
         }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className="fixed left-0 top-20 h-[calc(100vh-5rem)] bg-white/95 backdrop-blur-md border-r border-gray-200 z-30 hidden lg:block shadow-lg"
+        className="fixed left-0 top-16 h-[calc(100vh-4rem)] bg-white/95 backdrop-blur-md border-r border-gray-200 z-30 hidden lg:block shadow-lg"
       >
         {/* Collapse Button */}
-        <div className="absolute -right-3 top-4 z-10">
+        <div className="absolute -right-4 top-4 z-10">
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className="p-1.5 rounded-full bg-white border-2 border-gray-200 hover:border-[#31757A] hover:bg-[#E3F9F9] transition-all shadow-md"
@@ -395,16 +408,17 @@ const AdminLayout = ({ children, className }) => {
         </div>
 
         {/* Navigation */}
-        <nav className="p-4 space-y-2 overflow-y-auto h-[calc(100%-140px)]">
+        <nav className="p-4 space-y-2 overflow-y-auto h-[calc(100%)]">
           {navigation.map((item) => {
-            const Icon = iconMap[item.label];
+            const Icon = iconMap[item.icon];
             return (
               <NavLink
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) =>
                   cn(
-                    'group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200',
+                    'group flex items-center gap-3 rounded-xl text-sm font-medium transition-all duration-200',
+                    sidebarCollapsed ? 'justify-center px-4 py-3' : 'px-4 py-3',
                     isActive
                       ? 'bg-linear-to-r from-[#31757A] to-[#41A4A7] text-white shadow-lg shadow-[#31757A]/30'
                       : 'text-gray-700 hover:bg-[#E3F9F9] hover:text-[#1F2E2E]'
@@ -479,28 +493,28 @@ const AdminLayout = ({ children, className }) => {
                   <img
                     src={logo}
                     alt="KMJ Logo"
-                    className="h-10 w-10 object-contain"
+                    className="h-12 w-full object-contain"
                   />
-                  <div>
-                    <h1 className="text-base font-bold text-[#1F2E2E]">KMJ</h1>
-                    <p className="text-xs text-[#31757A]">
+                  {/* <div className="hidden sm:block">
+                    <h1 className="text-lg font-bold text-[#1F2E2E]">Kalloor Muslim Jama-ath</h1>
+                    <p className="text-xs text-[#31757A] font-medium">
                       {isAdmin() ? 'Admin Panel' : 'Member Portal'}
                     </p>
-                  </div>
+                  </div> */}
                 </div>
-                
-                <button
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                >
-                  <XMarkIcon className="h-6 w-6 text-gray-600" />
-                </button>
-              </div>
+                  
+                  <button
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <XMarkIcon className="h-6 w-6 text-gray-600" />
+                  </button>
+                </div>
 
               {/* Navigation */}
               <nav className="p-4 space-y-2 overflow-y-auto h-[calc(100vh-180px)]">
                 {navigation.map((item) => {
-                  const Icon = iconMap[item.label];
+                  const Icon = iconMap[item.icon];
                   return (
                     <NavLink
                       key={item.path}

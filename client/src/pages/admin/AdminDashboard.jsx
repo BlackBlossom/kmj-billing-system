@@ -25,7 +25,7 @@ import {
 import AdminLayout from '../../components/layout/AdminLayout';
 import { Skeleton, Card } from '../../components/common';
 import { ANIMATION_VARIANTS } from '../../lib/constants';
-import { getAllMembers } from '../../services/memberService';
+import axiosInstance from '../../api/axios.config';
 import toast from 'react-hot-toast';
 
 const AdminDashboard = () => {
@@ -33,7 +33,6 @@ const AdminDashboard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
-  const [showResults, setShowResults] = useState(false);
 
   // Quick action cards configuration
   const quickActions = [
@@ -85,25 +84,24 @@ const AdminDashboard = () => {
 
   // Search members with debounce
   useEffect(() => {
-    if (searchQuery.trim().length < 2) {
+    if (searchQuery.trim().length < 1) {
       setSearchResults([]);
-      setShowResults(false);
       return;
     }
 
     const timer = setTimeout(async () => {
       try {
         setSearching(true);
-        const response = await getAllMembers({ 
-          search: searchQuery, 
-          limit: 8,
-          page: 1 
-        });
-        setSearchResults(response.data.members || []);
-        setShowResults(true);
+        // Use the search endpoint with proper encoding
+        const encodedQuery = encodeURIComponent(searchQuery.trim());
+        const response = await axiosInstance.get(`/members/search?q=${encodedQuery}&type=all`);
+        
+        // Response structure: { success, count, data: [...members array] }
+        setSearchResults(response.data || []);
       } catch (error) {
         console.error('Search error:', error);
         toast.error('Failed to search members');
+        setSearchResults([]);
       } finally {
         setSearching(false);
       }
@@ -114,8 +112,6 @@ const AdminDashboard = () => {
 
   const handleMemberClick = (memberId) => {
     navigate(`/admin/members?view=${memberId}`);
-    setShowResults(false);
-    setSearchQuery('');
   };
 
   const handleQuickAction = (path) => {
@@ -125,7 +121,7 @@ const AdminDashboard = () => {
   return (
     <AdminLayout>
       {/* Header */}
-      <motion.div
+      {/* <motion.div
         variants={ANIMATION_VARIANTS.fadeIn}
         initial="hidden"
         animate="visible"
@@ -142,7 +138,7 @@ const AdminDashboard = () => {
             Your central command center for managing members, billing, notices, and more
           </p>
         </div>
-      </motion.div>
+      </motion.div> */}
 
       {/* Search Section */}
       <motion.div
@@ -152,24 +148,24 @@ const AdminDashboard = () => {
         className="mb-8"
       >
         <Card className="border-0 shadow-lg">
-          <Card.Content className="p-6">
+          <Card.Content className="p-4 sm:p-6">
             <div className="flex items-center gap-3 mb-4">
-              <MagnifyingGlassIcon className="h-6 w-6 text-[#31757A]" />
-              <h2 className="text-lg font-bold text-[#1F2E2E]">Quick Member Search</h2>
+              <MagnifyingGlassIcon className="h-5 w-5 sm:h-6 sm:w-6 text-[#31757A]" />
+              <h2 className="text-base sm:text-lg font-bold text-[#1F2E2E]">Quick Member Search</h2>
             </div>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-xs sm:text-sm text-gray-600 mb-4">
               Search for members by name, Mahal ID, or phone number
             </p>
 
-            <div className="relative">
+            <div className="relative mb-4 sm:mb-6">
               <div className="relative">
-                <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <MagnifyingGlassIcon className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search members by name, Mahal ID, phone..."
+                  placeholder="Search members..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#31757A]/20 focus:border-[#31757A] transition-all text-gray-900 placeholder-gray-500"
+                  className="w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 bg-white border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#31757A]/20 focus:border-[#31757A] transition-all text-sm sm:text-base text-gray-900 placeholder-gray-500"
                 />
                 {searching && (
                   <div className="absolute right-4 top-1/2 -translate-y-1/2">
@@ -177,68 +173,137 @@ const AdminDashboard = () => {
                   </div>
                 )}
               </div>
-
-              {/* Search Results Dropdown */}
-              {showResults && searchResults.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden z-50"
-                >
-                  <div className="p-3 border-b border-gray-100 bg-gray-50">
-                    <p className="text-xs font-semibold text-gray-600">
-                      {searchResults.length} member{searchResults.length !== 1 ? 's' : ''} found
-                    </p>
-                  </div>
-                  <div className="max-h-96 overflow-y-auto">
-                    {searchResults.map((member) => (
-                      <button
-                        key={member._id}
-                        onClick={() => handleMemberClick(member._id)}
-                        className="w-full p-4 hover:bg-[#E3F9F9]/50 transition-colors text-left flex items-center justify-between group border-b border-gray-50 last:border-0"
-                      >
-                        <div className="flex-1">
-                          <p className="font-semibold text-[#1F2E2E] group-hover:text-[#31757A] transition-colors">
-                            {member.name}
-                          </p>
-                          <div className="flex items-center gap-3 mt-1">
-                            <span className="text-xs text-gray-600">
-                              Mahal ID: {member.mahalId}
-                            </span>
-                            {member.phone && (
-                              <span className="text-xs text-gray-600">
-                                • {member.phone}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <EyeIcon className="h-5 w-5 text-gray-400 group-hover:text-[#31757A] transition-colors" />
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-
-              {showResults && searchResults.length === 0 && !searching && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="absolute top-full mt-2 w-full bg-white rounded-xl shadow-2xl border border-gray-200 p-8 text-center z-50"
-                >
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <MagnifyingGlassIcon className="h-8 w-8 text-gray-400" />
-                  </div>
-                  <p className="text-gray-600 font-medium">No members found</p>
-                  <p className="text-sm text-gray-500 mt-1">Try a different search term</p>
-                </motion.div>
-              )}
             </div>
+
+            {/* Search Results Table */}
+            <div className="border border-gray-200 rounded-xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[640px]">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Mahal ID
+                      </th>
+                      <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Name
+                      </th>
+                      <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden sm:table-cell">
+                        Phone
+                      </th>
+                      <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider hidden md:table-cell">
+                        Ward
+                      </th>
+                      <th className="px-3 sm:px-6 py-2 sm:py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {!searchQuery.trim() ? (
+                      <tr>
+                        <td colSpan="5" className="px-6 py-12 text-center">
+                          <div className="flex flex-col items-center justify-center">
+                            <MagnifyingGlassIcon className="h-12 w-12 text-gray-300 mb-3" />
+                            <p className="text-gray-600 font-medium">Search for any member</p>
+                            <p className="text-sm text-gray-500 mt-1">
+                              Enter name, Mahal ID, or phone number to find members
+                            </p>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : searching ? (
+                      <tr>
+                        <td colSpan="5" className="px-6 py-12 text-center">
+                          <div className="flex flex-col items-center justify-center">
+                            <div className="animate-spin rounded-full h-10 w-10 border-3 border-[#31757A] border-t-transparent mb-3" />
+                            <p className="text-gray-600">Searching...</p>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : searchResults.length === 0 ? (
+                      <tr>
+                        <td colSpan="5" className="px-6 py-12 text-center">
+                          <div className="flex flex-col items-center justify-center">
+                            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                              <MagnifyingGlassIcon className="h-8 w-8 text-gray-400" />
+                            </div>
+                            <p className="text-gray-600 font-medium">No members found</p>
+                            <p className="text-sm text-gray-500 mt-1">Try a different search term</p>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      searchResults.map((member) => (
+                        <tr
+                          key={member._id}
+                          className="hover:bg-[#E3F9F9]/30 transition-colors"
+                        >
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                            <span className="text-xs sm:text-sm font-semibold text-[#31757A]">
+                              {member.Mid || 'N/A'}
+                            </span>
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                            <span className="text-xs sm:text-sm font-medium text-gray-900">
+                              {member.Fname || 'N/A'}
+                            </span>
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden sm:table-cell">
+                            <span className="text-xs sm:text-sm text-gray-600">
+                              {member.Mobile || 'N/A'}
+                            </span>
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden md:table-cell">
+                            <span className="text-xs sm:text-sm text-gray-600">
+                              {member.Mward || 'N/A'}
+                            </span>
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                            <div className="flex items-center justify-center gap-1 sm:gap-2 flex-wrap">
+                              <button
+                                onClick={() => navigate(`/admin/members?search=${encodeURIComponent(member.Mid)}`)}
+                                className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 bg-[#31757A] text-white text-xs font-medium rounded-lg hover:bg-[#41A4A7] transition-colors"
+                              >
+                                <EyeIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <span className="hidden sm:inline">View</span>
+                              </button>
+                              <button
+                                onClick={() => navigate(`/admin/bills?search=${encodeURIComponent(member.Mid)}`)}
+                                className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                              >
+                                <DocumentTextIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <span className="hidden sm:inline">Bills</span>
+                              </button>
+                              <button
+                                onClick={() => navigate(`/admin/quick-pay?member=${encodeURIComponent(member.Fname)}`)}
+                                className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700 transition-colors"
+                              >
+                                <CreditCardIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                                <span className="hidden sm:inline">Pay</span>
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {searchResults.length > 0 && (
+              <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+                <p>
+                  Showing <span className="font-semibold text-[#31757A]">{searchResults.length}</span> member{searchResults.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+            )}
           </Card.Content>
         </Card>
       </motion.div>
 
       {/* Quick Actions Grid */}
-      <motion.div
+      {/* <motion.div
         variants={ANIMATION_VARIANTS.stagger}
         initial="hidden"
         animate="visible"
@@ -257,7 +322,7 @@ const AdminDashboard = () => {
             >
               <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 group">
                 <Card.Content className="p-6">
-                  {/* Section Header */}
+                  {/* Section Header *
                   <div className="flex items-start gap-4 mb-6">
                     <div className={`p-4 rounded-xl bg-linear-to-br ${section.gradient} shadow-lg`}>
                       <section.icon className="h-7 w-7 text-white" />
@@ -272,7 +337,7 @@ const AdminDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
+                  {/* Action Buttons *
                   <div className="grid grid-cols-1 gap-3">
                     {section.actions.map((action, actionIndex) => (
                       <button
@@ -300,7 +365,7 @@ const AdminDashboard = () => {
             </motion.div>
           ))}
         </div>
-      </motion.div>
+      </motion.div> */}
 
       {/* Help Section */}
       {/* <motion.div

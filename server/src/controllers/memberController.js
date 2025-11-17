@@ -255,8 +255,7 @@ export const updateMember = async (req, res, next) => {
     if (req.body.Aadhaar && req.body.Aadhaar !== member.Aadhaar) {
       const existingMember = await Member.findOne({ 
         Aadhaar: req.body.Aadhaar,
-        _id: { $ne: req.params.id },
-        Aadhaar: { $ne: '' }
+        _id: { $ne: req.params.id }
       });
       
       if (existingMember) {

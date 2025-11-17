@@ -21,13 +21,14 @@ import { Card, Button, Badge, Input, Skeleton } from '../../components/common';
 import { ANIMATION_VARIANTS } from '../../lib/constants';
 import { formatDate, formatMemberId, cn } from '../../lib/utils';
 import { getAllMembers, searchMembers, deleteMember, getMemberCount } from '../../services/memberService';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { AnimatePresence } from 'framer-motion';
 import MemberDetailModal from '../../components/modals/MemberDetailModal';
 
 const MembersPage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -131,6 +132,15 @@ const MembersPage = () => {
 
     return () => clearTimeout(timer);
   }, [searchQuery]);
+
+  // Check for search parameter from URL on mount
+  useEffect(() => {
+    const searchFromUrl = searchParams.get('search');
+    if (searchFromUrl) {
+      setSearchQuery(searchFromUrl);
+      // performSearch will be triggered by the searchQuery useEffect above
+    }
+  }, [searchParams]);
 
   // Fetch count when filters change
   useEffect(() => {
@@ -466,16 +476,16 @@ const MembersPage = () => {
                   ) : (
                     <span className="flex items-center gap-2">
                       <UserGroupIcon className="h-5 w-5" />
-                      All Members ({filteredMembers.length})
+                      All Members ({pagination.total})
                     </span>
                   )}
                 </Card.Title>
-                <Card.Description className="text-sm mt-1">
+                {/* <Card.Description className="text-sm mt-1">
                   {isSearching 
                     ? `Showing search results for "${searchQuery}"` 
                     : `Page ${pagination.page} of ${pagination.totalPages} • ${pagination.total} total members`
                   }
-                </Card.Description>
+                </Card.Description> */}
               </div>
               {isSearching && (
                 <Badge variant="success" className="px-4 py-2">

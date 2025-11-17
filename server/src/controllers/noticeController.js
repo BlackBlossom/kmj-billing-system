@@ -1,36 +1,25 @@
 /**
  * Notice Controller
- * Handles notice board operations
- * 
- * PHP Compatibility:
- * - index.php (notice board on homepage)
- * - Pageinfo.php (notice details page)
+ * Handles notice board operations - Simplified version
  */
 
 import Notice from '../models/Notice.js';
 import { AppError } from '../middleware/errorHandler.js';
 
 /**
- * @desc    Get all active notices
+ * @desc    Get all active (non-expired) notices
  * @route   GET /api/v1/notices
  * @access  Public
- * 
- * Matches: PHP index.php notice display
  */
 export const getAllNotices = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, priority = '', includeInactive = 'false' } = req.query;
+    const { page = 1, limit = 10, includeExpired = 'false' } = req.query;
 
-    // Build filter
+    // Build filter - only show non-expired notices by default
     const filter = {};
     
-    // For admin, allow viewing inactive notices if includeInactive is true
-    if (includeInactive === 'false') {
-      filter.isActive = true;
-    }
-
-    if (priority) {
-      filter.priority = priority;
+    if (includeExpired === 'false') {
+      filter.expiryDate = { $gte: new Date() };
     }
 
     // Pagination
@@ -39,7 +28,7 @@ export const getAllNotices = async (req, res, next) => {
     // Get notices
     const [notices, totalCount] = await Promise.all([
       Notice.find(filter)
-        .sort({ isPinned: -1, createdAt: -1 })
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(parseInt(limit))
         .populate('author', 'username email')
@@ -68,14 +57,13 @@ export const getAllNotices = async (req, res, next) => {
  * @desc    Get single notice by ID
  * @route   GET /api/v1/notices/:id
  * @access  Public
- * 
- * Matches: PHP Pageinfo.php
  */
 export const getNoticeById = async (req, res, next) => {
   try {
-    const notice = await Notice.findById(req.params.id);
+    const notice = await Notice.findById(req.params.id)
+      .populate('author', 'username email');
 
-    if (!notice || !notice.isActive) {
+    if (!notice) {
       return next(new AppError('Notice not found', 404));
     }
 
@@ -95,26 +83,18 @@ export const getNoticeById = async (req, res, next) => {
  */
 export const createNotice = async (req, res, next) => {
   try {
-    const {
-      title,
-      content,
-      priority = 'normal',
-      expiresAt,
-      isActive = true,
-      category = 'General',
-      isPinned = false
-    } = req.body;
+    const { title, content, expiryDate } = req.body;
+
+    if (!title || !content || !expiryDate) {
+      return next(new AppError('Please provide title, content, and expiry date', 400));
+    }
 
     // Create notice with author from authenticated user
     const notice = await Notice.create({
       title,
       content,
-      priority,
-      expiryDate: expiresAt ? new Date(expiresAt) : null,
-      isActive,
-      category,
-      isPinned,
-      author: req.user.id || req.user._id // User ID from JWT token
+      expiryDate: new Date(expiryDate),
+      author: req.user.id || req.user._id
     });
 
     // Populate author details
@@ -143,15 +123,11 @@ export const updateNotice = async (req, res, next) => {
       return next(new AppError('Notice not found', 404));
     }
 
-    const { title, content, priority, expiresAt, isActive, category, isPinned } = req.body;
+    const { title, content, expiryDate } = req.body;
 
     if (title !== undefined) notice.title = title;
     if (content !== undefined) notice.content = content;
-    if (priority !== undefined) notice.priority = priority;
-    if (expiresAt !== undefined) notice.expiryDate = expiresAt ? new Date(expiresAt) : null;
-    if (isActive !== undefined) notice.isActive = isActive;
-    if (category !== undefined) notice.category = category;
-    if (isPinned !== undefined) notice.isPinned = isPinned;
+    if (expiryDate !== undefined) notice.expiryDate = new Date(expiryDate);
 
     await notice.save();
 
@@ -175,15 +151,11 @@ export const updateNotice = async (req, res, next) => {
  */
 export const deleteNotice = async (req, res, next) => {
   try {
-    const notice = await Notice.findById(req.params.id);
+    const notice = await Notice.findByIdAndDelete(req.params.id);
 
     if (!notice) {
       return next(new AppError('Notice not found', 404));
     }
-
-    // Soft delete
-    notice.isActive = false;
-    await notice.save();
 
     res.status(200).json({
       success: true,

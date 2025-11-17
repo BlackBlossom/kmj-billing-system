@@ -137,44 +137,44 @@ export const TRANSITIONS = {
 
 // Account Types
 export const ACCOUNT_TYPES = [
-  { value: 'Dua_Friday', label: 'Dua Friday', icon: '🕌' },
-  { value: 'Donation', label: 'Donation (സംഭാവന)', icon: '💰' },
-  { value: 'Sunnath Fee', label: 'Sunnath Fee', icon: '👶' },
-  { value: 'Marriage Fee', label: 'Marriage Fee', icon: '💍' },
-  { value: 'Product Turnover', label: 'Product Turnover (ഉൽപ്പന്നങ്ങൾ)', icon: '📦' },
-  { value: 'Rental_Basis', label: 'Rental Basis', icon: '🏠' },
-  { value: 'Devotional Dedication', label: 'Devotional (കാണിക്ക)', icon: '🙏' },
-  { value: 'Dead Fee', label: 'Dead Fee (മയ്യത്ത്)', icon: '🕊️' },
-  { value: 'New Membership', label: 'New Membership', icon: '👥' },
-  { value: 'Certificate Fee', label: 'Certificate Fee', icon: '📜' },
-  { value: 'Eid ul Adha', label: 'Eid ul Adha', icon: '🐐' },
-  { value: 'Eid al-Fitr', label: 'Eid al-Fitr', icon: '🌙' },
-  { value: 'Madrassa', label: 'Madrassa', icon: '📚' },
-  { value: 'Sadhu', label: 'Sadhu', icon: '🙏' },
-  { value: 'Land', label: 'Land', icon: '🌾' },
-  { value: 'Nercha', label: 'Nercha', icon: '✨' },
+  { value: 'Dua_Friday', label: 'Dua Friday' },
+  { value: 'Donation', label: 'Donation (സംഭാവന)' },
+  { value: 'Sunnath Fee', label: 'Sunnath Fee' },
+  { value: 'Marriage Fee', label: 'Marriage Fee' },
+  { value: 'Product Turnover', label: 'Product Turnover (ഉൽപ്പന്നങ്ങൾ)' },
+  { value: 'Rental_Basis', label: 'Rental Basis' },
+  { value: 'Devotional Dedication', label: 'Devotional (കാണിക്ക)' },
+  { value: 'Dead Fee', label: 'Dead Fee (മയ്യത്ത്)' },
+  { value: 'New Membership', label: 'New Membership' },
+  { value: 'Certificate Fee', label: 'Certificate Fee' },
+  { value: 'Eid ul Adha', label: 'Eid ul Adha' },
+  { value: 'Eid al-Fitr', label: 'Eid al-Fitr' },
+  { value: 'Madrassa', label: 'Madrassa' },
+  { value: 'Sadhu', label: 'Sadhu' },
+  { value: 'Land', label: 'Land' },
+  { value: 'Nercha', label: 'Nercha' },
 ];
 
 // Gender Options
 export const GENDER_OPTIONS = [
-  { value: 'Male', label: 'Male', icon: '👨' },
-  { value: 'Female', label: 'Female', icon: '👩' },
-  { value: 'Other', label: 'Other', icon: '🧑' },
+  { value: 'Male', label: 'Male' },
+  { value: 'Female', label: 'Female' },
+  { value: 'Other', label: 'Other' },
 ];
 
 // Relation Options
 export const RELATION_OPTIONS = [
-  { value: 'Head', label: 'Head of Family', icon: '👨‍👩‍👧‍👦' },
-  { value: 'Spouse', label: 'Spouse', icon: '💑' },
-  { value: 'Son', label: 'Son', icon: '👦' },
-  { value: 'Daughter', label: 'Daughter', icon: '👧' },
-  { value: 'Father', label: 'Father', icon: '👴' },
-  { value: 'Mother', label: 'Mother', icon: '👵' },
-  { value: 'Brother', label: 'Brother', icon: '👨' },
-  { value: 'Sister', label: 'Sister', icon: '👩' },
-  { value: 'Grandfather', label: 'Grandfather', icon: '👴' },
-  { value: 'Grandmother', label: 'Grandmother', icon: '👵' },
-  { value: 'Other', label: 'Other', icon: '👤' },
+  { value: 'Head', label: 'Head of Family' },
+  { value: 'Spouse', label: 'Spouse' },
+  { value: 'Son', label: 'Son' },
+  { value: 'Daughter', label: 'Daughter' },
+  { value: 'Father', label: 'Father' },
+  { value: 'Mother', label: 'Mother' },
+  { value: 'Brother', label: 'Brother' },
+  { value: 'Sister', label: 'Sister' },
+  { value: 'Grandfather', label: 'Grandfather' },
+  { value: 'Grandmother', label: 'Grandmother' },
+  { value: 'Other', label: 'Other' },
 ];
 
 // Marital Status
@@ -209,11 +209,11 @@ export const RATION_CARD_TYPES = [
 
 // Payment Methods
 export const PAYMENT_METHODS = [
-  { value: 'Cash', label: 'Cash', icon: '💵' },
-  { value: 'UPI', label: 'UPI', icon: '📱' },
-  { value: 'Card', label: 'Card', icon: '💳' },
-  { value: 'Bank Transfer', label: 'Bank Transfer', icon: '🏦' },
-  { value: 'Cheque', label: 'Cheque', icon: '📝' },
+  { value: 'Cash', label: 'Cash' },
+  { value: 'UPI', label: 'UPI' },
+  { value: 'Card', label: 'Card' },
+  { value: 'Bank Transfer', label: 'Bank Transfer' },
+  { value: 'Cheque', label: 'Cheque' },
 ];
 
 // Notice Priorities
@@ -230,15 +230,37 @@ export const WARD_OPTIONS = Array.from({ length: 10 }, (_, i) => ({
   label: `Ward ${i + 1}`,
 }));
 
-// Dashboard Stats Icons
-export const STAT_ICONS = {
-  members: '👥',
-  families: '👨‍👩‍👧‍👦',
-  bills: '💰',
-  revenue: '📊',
-  notices: '📢',
-  users: '🧑‍💼',
-};
+// Voucher Service Types
+export const VOUCHER_SERVICES = [
+  { value: 'Jama_Ath', label: 'Jama Ath' },
+  { value: 'Madrassa', label: 'Madrassa' },
+  { value: 'Sadhu Sahayam', label: 'Sadhu Sahayam' },
+  { value: 'Nercha', label: 'Nercha' },
+  { value: 'Land Purchase', label: 'Land Purchase' },
+  { value: 'Others', label: 'Others' },
+];
+
+// Department Types
+export const DEPARTMENT_TYPES = [
+  { value: 'Engineering', label: 'Engineering' },
+  { value: 'Electrical', label: 'Electrical' },
+  { value: 'Plumbing', label: 'Plumbing' },
+  { value: 'Others', label: 'Others' },
+];
+
+// Report Status
+export const REPORT_STATUS = [
+  { value: 'Pending', label: 'Pending', color: 'orange' },
+  { value: 'In Progress', label: 'In Progress', color: 'blue' },
+  { value: 'Resolved', label: 'Resolved', color: 'green' },
+];
+
+// Certificate Types
+export const CERTIFICATE_TYPES = [
+  { value: 'Marriage', label: 'Marriage Certificate' },
+  { value: 'Death', label: 'Death Certificate' },
+  { value: 'Transfer', label: 'Transfer Certificate' },
+];
 
 // Navigation Menu (Admin)
 export const ADMIN_NAV = [
@@ -247,17 +269,20 @@ export const ADMIN_NAV = [
   { label: 'Quick Pay', path: '/admin/quick-pay', icon: 'CreditCard' },
   { label: 'Bills', path: '/admin/bills', icon: 'Receipt' },
   { label: 'Notices', path: '/admin/notices', icon: 'Megaphone' },
-  // { label: 'Reports', path: '/admin/reports', icon: 'BarChart3' },
-  // { label: 'Settings', path: '/admin/settings', icon: 'Settings' },
+  { label: 'Vouchers', path: '/admin/vouchers', icon: 'FileText' },
+  { label: 'Land', path: '/admin/lands', icon: 'MapPin' },
+  { label: 'Inventory', path: '/admin/inventory', icon: 'Package' },
+  { label: 'Reports', path: '/admin/reports', icon: 'AlertCircle' },
+  // { label: 'Certificates', path: '/admin/certificates', icon: 'Award' },
 ];
 
 // Navigation Menu (User)
 export const USER_NAV = [
-  { label: 'Dashboard', path: '/dashboard', icon: 'LayoutDashboard' },
-  { label: 'Profile', path: '/profile', icon: 'User' },
-  { label: 'Family', path: '/family', icon: 'Users' },
-  { label: 'Bills', path: '/bills', icon: 'Receipt' },
-  // { label: 'Settings', path: '/settings', icon: 'Settings' },
+  { label: 'Dashboard', path: '/user/dashboard', icon: 'LayoutDashboard' },
+  { label: 'Profile', path: '/user/profile', icon: 'User' },
+  { label: 'Family', path: '/user/family', icon: 'Users' },
+  { label: 'Bills', path: '/user/bills', icon: 'Receipt' },
+  // { label: 'Settings', path: '/user/settings', icon: 'Settings' },
 ];
 
 // API Base URL

@@ -1,6 +1,6 @@
 /**
  * Notice Service
- * API calls for notice board management
+ * API calls for notice board management - Simplified version
  */
 
 import axios from 'axios';
@@ -25,18 +25,8 @@ api.interceptors.request.use((config) => {
 });
 
 /**
- * Priority levels
- */
-export const PRIORITY_LEVELS = [
-  { value: 'urgent', label: 'Urgent', color: 'red' },
-  { value: 'high', label: 'High', color: 'orange' },
-  { value: 'normal', label: 'Normal', color: 'blue' },
-  { value: 'low', label: 'Low', color: 'gray' },
-];
-
-/**
- * Get all active notices (Public)
- * @param {Object} params - Query parameters (page, limit, priority)
+ * Get all active (non-expired) notices (Public)
+ * @param {Object} params - Query parameters (page, limit, includeExpired)
  * @returns {Promise} Notices list
  */
 export const getAllNotices = async (params = {}) => {
@@ -56,7 +46,7 @@ export const getNoticeById = async (id) => {
 
 /**
  * Create new notice (Admin only)
- * @param {Object} noticeData - Notice data { title, content, priority, expiresAt }
+ * @param {Object} noticeData - Notice data { title, content, expiryDate }
  * @returns {Promise} Created notice
  */
 export const createNotice = async (noticeData) => {
@@ -95,21 +85,6 @@ export const incrementViews = async (id) => {
   return response.data;
 };
 
-/**
- * Get priority color class
- * @param {string} priority - Priority level
- * @returns {string} Tailwind color class
- */
-export const getPriorityColor = (priority) => {
-  const colors = {
-    urgent: 'bg-red-100 text-red-800 border-red-300',
-    high: 'bg-orange-100 text-orange-800 border-orange-300',
-    normal: 'bg-blue-100 text-blue-800 border-blue-300',
-    low: 'bg-gray-100 text-gray-800 border-gray-300',
-  };
-  return colors[priority] || colors.normal;
-};
-
 export default {
   getAllNotices,
   getNoticeById,
@@ -117,6 +92,4 @@ export default {
   updateNotice,
   deleteNotice,
   incrementViews,
-  PRIORITY_LEVELS,
-  getPriorityColor,
 };

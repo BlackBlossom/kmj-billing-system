@@ -9,6 +9,13 @@ import userRoutes from './userRoutes.js';
 import memberRoutes from './memberRoutes.js';
 import billRoutes from './billRoutes.js';
 import noticeRoutes from './noticeRoutes.js';
+import familyRoutes from './familyRoutes.js';
+import voucherRoutes from './voucherRoutes.js';
+import landRoutes from './landRoutes.js';
+import inventoryRoutes from './inventoryRoutes.js';
+import reportRoutes from './reportRoutes.js';
+import certificateRoutes from './certificateRoutes.js';
+import uploadRoutes from './uploadRoutes.js';
 
 const router = express.Router();
 
@@ -31,6 +38,13 @@ router.use(`${API_VERSION}/users`, userRoutes);
 router.use(`${API_VERSION}/members`, memberRoutes);
 router.use(`${API_VERSION}/bills`, billRoutes);
 router.use(`${API_VERSION}/notices`, noticeRoutes);
+router.use(`${API_VERSION}/family`, familyRoutes);
+router.use(`${API_VERSION}/vouchers`, voucherRoutes);
+router.use(`${API_VERSION}/lands`, landRoutes);
+router.use(`${API_VERSION}/inventory`, inventoryRoutes);
+router.use(`${API_VERSION}/reports`, reportRoutes);
+router.use(`${API_VERSION}/certificates`, certificateRoutes);
+router.use(`${API_VERSION}/upload`, uploadRoutes);
 
 // API documentation endpoint
 router.get(`${API_VERSION}/docs`, (req, res) => {

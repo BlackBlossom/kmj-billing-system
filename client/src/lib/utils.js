@@ -48,6 +48,8 @@ export function formatMemberId(ward, house) {
  * Get initials from name
  */
 export function getInitials(name) {
+  if (!name || typeof name !== 'string') return '??';
+  
   return name
     .split(' ')
     .map(n => n[0])
