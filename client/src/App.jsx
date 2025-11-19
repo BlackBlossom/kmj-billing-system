@@ -43,6 +43,7 @@ import LandPage from './pages/admin/LandPage';
 import InventoryPage from './pages/admin/InventoryPage';
 import ReportsPage from './pages/admin/ReportsPage';
 import CertificatesPage from './pages/admin/CertificatesPage';
+import ContactsPage from './pages/admin/ContactsPage';
 import AdminProfilePage from './pages/admin/AdminProfilePage';
 
 // Public Pages (additional)
@@ -195,6 +196,14 @@ function App() {
           element={
             <ProtectedRoute requireAdmin>
               <ReportsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/contacts"
+          element={
+            <ProtectedRoute requireAdmin>
+              <ContactsPage />
             </ProtectedRoute>
           }
         />
