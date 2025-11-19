@@ -16,6 +16,7 @@ import inventoryRoutes from './inventoryRoutes.js';
 import reportRoutes from './reportRoutes.js';
 import certificateRoutes from './certificateRoutes.js';
 import uploadRoutes from './uploadRoutes.js';
+import contactRoutes from './contactRoutes.js';
 
 const router = express.Router();
 
@@ -45,6 +46,7 @@ router.use(`${API_VERSION}/inventory`, inventoryRoutes);
 router.use(`${API_VERSION}/reports`, reportRoutes);
 router.use(`${API_VERSION}/certificates`, certificateRoutes);
 router.use(`${API_VERSION}/upload`, uploadRoutes);
+router.use(`${API_VERSION}/contacts`, contactRoutes);
 
 // API documentation endpoint
 router.get(`${API_VERSION}/docs`, (req, res) => {
